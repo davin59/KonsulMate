@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
-import 'lib/pages/user/user_home_page.dart';
-import 'lib/pages/mentor/mentor_home_page.dart';
+import 'user/user_home_page.dart';
+import 'mentor/mentor_home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -37,11 +37,8 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder:
-              (context) =>
-                  isMentorSelected
-                      ? const MentorHomePage()
-                      : const UserHomePage(),
+          builder: (context) =>
+              isMentorSelected ? const MentorHomePage() : const UserHomePage(),
         ),
       );
     } else {
@@ -82,7 +79,16 @@ class _LoginPageState extends State<LoginPage> {
                   Image.asset('assets/images/illustration.png', height: 200),
                   const Text(
                     'Mentor Terbaikmu',
-                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Illustration (replace with your actual image assemt)
+                  Image.asset(
+                    'assets/images/illustration.png', 
+                    height: 200,
                   ),
                 ],
               ),
