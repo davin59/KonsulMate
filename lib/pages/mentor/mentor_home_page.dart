@@ -20,6 +20,63 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Define the MentorProfilePage
+class MentorProfilePage extends StatelessWidget {
+  const MentorProfilePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mentor Profile'),
+        backgroundColor: Colors.blue.shade600,
+        foregroundColor: Colors.white, // Text and icon color
+      ),
+      body: const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 60,
+                backgroundImage: AssetImage(
+                    'assets/mentor_avatar.png'), // Use mentor's avatar
+                backgroundColor: Colors.grey,
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Nama Mentor',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Asal Kampus',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey,
+                ),
+              ),
+              SizedBox(height: 30),
+              // Add more profile details here
+              Text(
+                'Detail informasi tentang mentor akan ditampilkan di sini. '
+                'Ini bisa mencakup keahlian, pengalaman, dan kontak.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.black87),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class MentorHomePage extends StatelessWidget {
   const MentorHomePage({super.key});
 
@@ -54,11 +111,20 @@ class MentorHomePage extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(
-              radius: 20,
-              backgroundImage: AssetImage(
-                  'assets/mentor_avatar.png'), // Replace with your image asset
-              backgroundColor: Colors.grey, // Placeholder if image not found
+            child: GestureDetector( // Wrapped with GestureDetector
+              onTap: () {
+                // Navigate to MentorProfilePage when mentor's avatar is tapped
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MentorProfilePage()),
+                );
+              },
+              child: CircleAvatar(
+                radius: 20,
+                backgroundImage: const AssetImage(
+                    'assets/mentor_avatar.png'), // Replace with your image asset
+                backgroundColor: Colors.grey, // Placeholder if image not found
+              ),
             ),
           ),
         ],
@@ -94,7 +160,11 @@ class MentorHomePage extends StatelessWidget {
         ],
         currentIndex: 1, // Highlight home icon as per image
         onTap: (index) {
-          // Handle navigation
+          // Handle navigation for bottom bar
+          // For example:
+          // if (index == 0) {
+          //   Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage()));
+          // }
         },
       ),
     );
@@ -115,7 +185,7 @@ class MentorHomePage extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 35,
-                  backgroundImage: AssetImage(
+                  backgroundImage: const AssetImage(
                       'assets/client_avatar.png'), // Replace with your image asset
                   backgroundColor: Colors.blueGrey, // Placeholder
                 ),
