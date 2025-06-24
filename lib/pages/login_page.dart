@@ -37,8 +37,11 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              isMentorSelected ? const MentorHomePage() : const UserHomePage(),
+          builder:
+              (context) =>
+                  isMentorSelected
+                      ? const MentorHomePage()
+                      : const UserHomePage(userName: ''),
         ),
       );
     } else {
@@ -72,24 +75,20 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 10),
                   const Text(
                     'Membantu Menemukan',
-                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 5),
                   const SizedBox(height: 20),
                   Image.asset('assets/images/illustration.png', height: 200),
                   const Text(
                     'Mentor Terbaikmu',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black,
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.black),
                   ),
                   const SizedBox(height: 20),
-                  // Illustration (replace with your actual image assemt)
-                  Image.asset(
-                    'assets/images/illustration.png', 
-                    height: 200,
-                  ),
                 ],
               ),
             ),
