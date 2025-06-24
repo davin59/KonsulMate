@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                   Image.asset('assets/images/illustration.png', height: 200),
                   const Text(
                     'Mentor Terbaikmu',
-                    style: TextStyle(fontSize: 18, color: Colors.black),
+                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
                 ],
