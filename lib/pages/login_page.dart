@@ -1,6 +1,54 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
-class LoginPage extends StatelessWidget {
+import 'lib/pages/user/user_home_page.dart';
+import 'lib/pages/mentor/mentor_home_page.dart';
+
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool isMentorSelected = false; // default: user
+
+  Future<Map<String, dynamic>> loadJsonData() async {
+    String data = await rootBundle.loadString('assets/data/dummy.json');
+    return json.decode(data);
+  }
+
+  void handleMasuk(BuildContext context) async {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+    final jsonData = await loadJsonData();
+
+    String role = isMentorSelected ? 'mentor' : 'user';
+    final dataList = jsonData[role] as List;
+    final user = dataList.firstWhere(
+      (u) => u['email'] == email && u['password'] == password,
+      orElse: () => null,
+    );
+
+    if (user != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              isMentorSelected ? const MentorHomePage() : const UserHomePage(),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email atau password salah!')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,13 +60,13 @@ class LoginPage extends StatelessWidget {
             // Top Section - Logo and Tagline
             Container(
               padding: const EdgeInsets.only(top: 60.0, bottom: 20.0),
-              color: Colors.white, // Ensure this matches your background
+              color: Colors.white, 
               child: Column(
                 children: [
                   const Text(
                     'KonsulMate',
                     style: TextStyle(
-                      fontFamily: 'chewy', // You might need to add this font to your pubspec.yaml
+                      fontFamily: 'chewy', 
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
@@ -55,7 +103,7 @@ class LoginPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20.0),
               decoration: const BoxDecoration(
-                color: Color(0xFF87CEEB), // A light sky blue color, adjust as needed
+                color: Color(0xFF87CEEB), 
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(30.0),
                   topRight: Radius.circular(30.0),
@@ -69,10 +117,14 @@ class LoginPage extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // Handle Login Mentor
+                            setState(() {
+                              isMentorSelected = true;
+                            });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[800], // Darker blue
+                            backgroundColor: isMentorSelected
+                                ? Colors.blue[900]
+                                : Colors.blue[800],
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -88,10 +140,14 @@ class LoginPage extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // Handle Login User
+                            setState(() {
+                              isMentorSelected = false;
+                            });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[800], // Darker blue
+                            backgroundColor: !isMentorSelected
+                                ? Colors.blue[900]
+                                : Colors.blue[800],
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -107,8 +163,9 @@ class LoginPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   TextField(
+                    controller: emailController,
                     decoration: InputDecoration(
-                      hintText: 'Username',
+                      hintText: 'Email',
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
@@ -120,6 +177,7 @@ class LoginPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 15),
                   TextField(
+                    controller: passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: 'Password',
@@ -158,7 +216,7 @@ class LoginPage extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // Handle Masuk (Login)
+                            handleMasuk(context);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue[800], // Darker blue
@@ -192,16 +250,14 @@ class LoginPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 20),
                       IconButton(
-                        icon: const Icon(Icons.facebook, size: 30, color: Colors.blue), // Using a Facebook icon for illustration
+                        icon: const Icon(Icons.facebook, size: 30, color: Colors.blue), 
                         onPressed: () {
                           // Handle Facebook login
                         },
                       ),
                       const SizedBox(width: 20),
                       IconButton(
-                        icon: const Icon(Icons.travel_explore, size: 30, color: Colors.lightBlueAccent), // Using a general icon for illustration
-                        // For Twitter, you would typically use a FontAwesome icon or a custom SVG.
-                        // For simplicity, using a built-in icon here.
+                        icon: const Icon(Icons.travel_explore, size: 30, color: Colors.lightBlueAccent), 
                         onPressed: () {
                           // Handle Twitter login
                         },
