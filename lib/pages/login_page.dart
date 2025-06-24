@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
@@ -39,8 +37,11 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              isMentorSelected ? const MentorHomePage() : const UserHomePage(),
+          builder:
+              (context) =>
+                  isMentorSelected
+                      ? const MentorHomePage()
+                      : const UserHomePage(),
         ),
       );
     } else {
@@ -60,13 +61,12 @@ class _LoginPageState extends State<LoginPage> {
             // Top Section - Logo and Tagline
             Container(
               padding: const EdgeInsets.only(top: 60.0, bottom: 20.0),
-              color: Colors.white, 
+              color: Colors.white,
               child: Column(
                 children: [
                   const Text(
                     'KonsulMate',
                     style: TextStyle(
-                      fontFamily: 'chewy', 
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
@@ -75,24 +75,14 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 10),
                   const Text(
                     'Membantu Menemukan',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black,
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 5),
+                  const SizedBox(height: 20),
+                  Image.asset('assets/images/illustration.png', height: 200),
                   const Text(
                     'Mentor Terbaikmu',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Illustration (replace with your actual image assemt)
-                  Image.asset(
-                    'assets/images/illustration.png', 
-                    height: 200,
+                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -103,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(20.0),
               decoration: const BoxDecoration(
-                color: Color(0xFF87CEEB), 
+                color: Color(0xFF87CEEB),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(30.0),
                   topRight: Radius.circular(30.0),
@@ -122,9 +112,10 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isMentorSelected
-                                ? Colors.blue[900]
-                                : Colors.blue[800],
+                            backgroundColor:
+                                isMentorSelected
+                                    ? Colors.blue[900]
+                                    : Colors.blue[800],
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -145,9 +136,10 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: !isMentorSelected
-                                ? Colors.blue[900]
-                                : Colors.blue[800],
+                            backgroundColor:
+                                !isMentorSelected
+                                    ? Colors.blue[900]
+                                    : Colors.blue[800],
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -172,7 +164,10 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(10.0),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 15,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -187,7 +182,10 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(10.0),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 15,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -243,21 +241,33 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       IconButton(
-                        icon: const Icon(Icons.email, size: 30, color: Colors.black54),
+                        icon: const Icon(
+                          Icons.email,
+                          size: 30,
+                          color: Colors.black54,
+                        ),
                         onPressed: () {
                           // Handle email login
                         },
                       ),
                       const SizedBox(width: 20),
                       IconButton(
-                        icon: const Icon(Icons.facebook, size: 30, color: Colors.blue), 
+                        icon: const Icon(
+                          Icons.facebook,
+                          size: 30,
+                          color: Colors.blue,
+                        ),
                         onPressed: () {
                           // Handle Facebook login
                         },
                       ),
                       const SizedBox(width: 20),
                       IconButton(
-                        icon: const Icon(Icons.travel_explore, size: 30, color: Colors.lightBlueAccent), 
+                        icon: const Icon(
+                          Icons.travel_explore,
+                          size: 30,
+                          color: Colors.lightBlueAccent,
+                        ),
                         onPressed: () {
                           // Handle Twitter login
                         },
