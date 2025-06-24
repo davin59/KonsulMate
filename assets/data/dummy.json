@@ -33,6 +33,7 @@
       "tools_disukai": "Python, TensorFlow",
       "deskripsi_singkat": "Berpengalaman 5 tahun di bidang data science.",
       "harga_per_meets": 75000,
+      "rateing" : 4.5,
       "password": "budi456"
     },
     {
@@ -46,6 +47,7 @@
       "tools_disukai": "Excel, Trello",
       "deskripsi_singkat": "Konsultan bisnis dan startup.",
       "harga_per_meets": 60000,
+      "rateing" : 4.5,
       "password": "dewi789"
     }
   ],
