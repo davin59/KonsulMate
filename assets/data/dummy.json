@@ -1,0 +1,87 @@
+{
+  "user": [
+    {
+      "id": "u1",
+      "nama": "Andi Pratama",
+      "jenis_kelamin": "Laki-laki",
+      "asal_kampus": "Universitas Indonesia",
+      "prodi": "Teknik Informatika",
+      "email": "andi@gmail.com",
+      "no_hp": "081234567890",
+      "password": "password123"
+    },
+    {
+      "id": "u2",
+      "nama": "Siti Rahma",
+      "jenis_kelamin": "Perempuan",
+      "asal_kampus": "Universitas Gadjah Mada",
+      "prodi": "Psikologi",
+      "email": "siti@gmail.com",
+      "no_hp": "081298765432",
+      "password": "siti123"
+    }
+  ],
+  "mentor": [
+    {
+      "id": "m1",
+      "nama": "Budi Santoso",
+      "jenis_kelamin": "Laki-laki",
+      "asal_kampus_alumni": "Institut Teknologi Bandung",
+      "prodi": "Sistem Informasi",
+      "email": "budi@mentor.com",
+      "keahlian": "Data Science, Machine Learning",
+      "tools_disukai": "Python, TensorFlow",
+      "deskripsi_singkat": "Berpengalaman 5 tahun di bidang data science.",
+      "harga_per_meets": 75000,
+      "password": "budi456"
+    },
+    {
+      "id": "m2",
+      "nama": "Dewi Lestari",
+      "jenis_kelamin": "Perempuan",
+      "asal_kampus_alumni": "Universitas Airlangga",
+      "prodi": "Manajemen",
+      "email": "dewi@mentor.com",
+      "keahlian": "Manajemen Bisnis, Startup",
+      "tools_disukai": "Excel, Trello",
+      "deskripsi_singkat": "Konsultan bisnis dan startup.",
+      "harga_per_meets": 60000,
+      "password": "dewi789"
+    }
+  ],
+  "admin": [
+    {
+      "id": "a1",
+      "username": "admin1",
+      "password": "adminpass"
+    }
+  ],
+  "pesanan": [
+    {
+      "id": "p1",
+      "id_user": "u1",
+      "id_mentor": "m1",
+      "nama_user": "Andi Pratama",
+      "nama_mentor": "Budi Santoso",
+      "tanggal_pesanan": "2025-06-24",
+      "waktu": "14:00",
+      "total_meets": 2,
+      "harga_mentor": 75000,
+      "total_harga": 150000,
+      "alamat_meets": "sundawa"
+    },
+    {
+      "id": "p2",
+      "id_user": "u2",
+      "id_mentor": "m2",
+      "nama_user": "Siti Rahma",
+      "nama_mentor": "Dewi Lestari",
+      "tanggal_pesanan": "2025-06-25",
+      "waktu": "10:00",
+      "total_meets": 1,
+      "harga_mentor": 60000,
+      "total_harga": 60000, 
+      "alamat_meets": "grombyang"
+    }
+  ]
+}
