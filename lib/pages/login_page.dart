@@ -1,8 +1,9 @@
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter/material.dart';
-import 'user/user_home_page.dart';
-import 'mentor/mentor_home_page.dart';
+import 'dart:convert'; // Untuk mengkonversi JSON
+import 'package:flutter/services.dart'
+    show rootBundle; // Untuk mengambil file dari assets
+import 'package:flutter/material.dart'; // Import UI toolkit Flutter
+import 'user/user_home_page.dart'; // Import halaman utama untuk user
+import 'mentor/mentor_home_page.dart'; // Import halaman utama untuk mentor
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,39 +13,57 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  bool isMentorSelected = false; // default: user
+  final TextEditingController emailController =
+      TextEditingController(); // Controller untuk input email
+  final TextEditingController passwordController =
+      TextEditingController(); // Controller untuk input password
+  bool isMentorSelected =
+      false; // Boolean untuk mengecek apakah login sebagai mentor atau user
 
+  // Fungsi untuk memuat data dari file JSON lokal
   Future<Map<String, dynamic>> loadJsonData() async {
-    String data = await rootBundle.loadString('assets/data/dummy.json');
-    return json.decode(data);
+    String data = await rootBundle.loadString(
+      'assets/data/dummy.json',
+    ); // Membaca file JSON dari assets
+    return json.decode(data); // Mengubah string JSON menjadi Map
   }
 
+  // Fungsi ketika tombol Masuk ditekan
   void handleMasuk(BuildContext context) async {
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
-    final jsonData = await loadJsonData();
+    String email = emailController.text.trim(); // Ambil email dari input
+    String password =
+        passwordController.text.trim(); // Ambil password dari input
+    final jsonData = await loadJsonData(); // Memuat data JSON
 
-    String role = isMentorSelected ? 'mentor' : 'user';
-    final dataList = jsonData[role] as List;
+    String role =
+        isMentorSelected
+            ? 'mentor'
+            : 'user'; // Menentukan role berdasarkan pilihan
+    final dataList = jsonData[role] as List; // Ambil list user/mentor dari JSON
     final user = dataList.firstWhere(
-      (u) => u['email'] == email && u['password'] == password,
-      orElse: () => null,
+      (u) =>
+          u['email'] == email &&
+          u['password'] ==
+              password, // Cari user dengan email dan password sesuai
+      orElse: () => null, // Jika tidak ditemukan, kembalikan null
     );
 
     if (user != null) {
+      // Jika user ditemukan, arahkan ke halaman sesuai role
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder:
               (context) =>
                   isMentorSelected
-                      ? const MentorHomePage()
-                      : const UserHomePage(userName: ''),
+                      ? const MentorHomePage() // Jika mentor, ke halaman mentor
+                      : const UserHomePage(
+                        userName: '',
+                      ), // Jika user, ke halaman user
         ),
       );
     } else {
+      // Jika user tidak ditemukan, tampilkan pesan kesalahan
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Email atau password salah!')),
       );
@@ -54,82 +73,99 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white, // Atur latar belakang menjadi putih
       body: SingleChildScrollView(
+        // Supaya bisa discroll jika layar kecil
         child: Column(
           children: <Widget>[
-            // Top Section - Logo and Tagline
+            // Bagian atas - Logo dan Tagline
             Container(
-              padding: const EdgeInsets.only(top: 60.0, bottom: 20.0),
+              padding: const EdgeInsets.only(
+                top: 60.0,
+                bottom: 20.0,
+              ), // Padding atas dan bawah
               color: Colors.white,
               child: Column(
                 children: [
                   const Text(
-                    'KonsulMate',
+                    'KonsulMate', // Nama aplikasi
                     style: TextStyle(
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
-                      fontFamily: 'chewy'
+                      fontFamily: 'chewy',
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 10), // Spasi
                   const Text(
-                    'Membantu Menemukan',
+                    'Membantu Menemukan', // Tagline
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'chewy'
+                      fontFamily: 'chewy',
                     ),
                   ),
                   const SizedBox(height: 5),
                   const SizedBox(height: 20),
-                  Image.asset('assets/images/illustration.png', height: 200),
+                  Image.asset(
+                    'assets/images/illustration.png',
+                    height: 200,
+                  ), // Gambar ilustrasi
                   const Text(
-                    'Mentor Terbaikmu',
-                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold, fontFamily: 'chewy'),
+                    'Mentor Terbaikmu', // Lanjutan tagline
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'chewy',
+                    ),
                   ),
                   const SizedBox(height: 20),
                 ],
               ),
             ),
 
-            // Bottom Section - Login Form
+            // Bagian bawah - Form Login
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20.0),
+              width: double.infinity, // Lebar penuh
+              padding: const EdgeInsets.all(20.0), // Padding isi
               decoration: const BoxDecoration(
-                color: Color(0xFF87CEEB),
+                color: Color(0xFF87CEEB), // Warna latar biru muda
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(30.0),
                   topRight: Radius.circular(30.0),
                 ),
               ),
+
+              // Pilihan login sebagai user atau mentor
               child: Column(
                 children: <Widget>[
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceEvenly, // Rata seimbang
                     children: <Widget>[
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              isMentorSelected = true;
+                              isMentorSelected =
+                                  true; // Pilih login sebagai mentor
                             });
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
                                 isMentorSelected
-                                    ? Colors.blue[900]
-                                    : Colors.blue[800],
+                                    ? Colors.blue[900] // Warna jika dipilih
+                                    : Colors
+                                        .blue[400], // Warna jika tidak dipilih
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           child: const Text(
-                            'Login Mentor',
+                            'Login Mentor', // Teks tombol
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         ),
@@ -139,14 +175,15 @@ class _LoginPageState extends State<LoginPage> {
                         child: ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              isMentorSelected = false;
+                              isMentorSelected =
+                                  false; // Pilih login sebagai user
                             });
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
                                 !isMentorSelected
                                     ? Colors.blue[900]
-                                    : Colors.blue[800],
+                                    : Colors.blue[400],
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -160,9 +197,11 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ],
                   ),
+
+                  // Kolom input email dan password
                   const SizedBox(height: 20),
                   TextField(
-                    controller: emailController,
+                    controller: emailController, // Input email
                     decoration: InputDecoration(
                       hintText: 'Email',
                       filled: true,
@@ -179,8 +218,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 15),
                   TextField(
-                    controller: passwordController,
-                    obscureText: true,
+                    controller: passwordController, // Input password
+                    obscureText: true, // Agar tidak terlihat
                     decoration: InputDecoration(
                       hintText: 'Password',
                       filled: true,
@@ -196,16 +235,18 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
+
+                  // Tombol daftar dan masuk
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // Handle Daftar (Register)
+                            // Fungsi saat tombol daftar ditekan (belum diimplementasi)
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[800], // Darker blue
+                            backgroundColor: Colors.blue[800], // Warna tombol
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -221,10 +262,10 @@ class _LoginPageState extends State<LoginPage> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            handleMasuk(context);
+                            handleMasuk(context); // Panggil fungsi login
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[800], // Darker blue
+                            backgroundColor: Colors.blue[800],
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -238,12 +279,15 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 30),
                   const Text(
-                    'Sign in with another method',
+                    'Sign in with another method', // Teks login alternatif
                     style: TextStyle(color: Colors.black54, fontSize: 14),
                   ),
                   const SizedBox(height: 15),
+
+                  // Ikon login alternatif (dummy)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -254,7 +298,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.black54,
                         ),
                         onPressed: () {
-                          // Handle email login
+                          // login email 
                         },
                       ),
                       const SizedBox(width: 20),
@@ -265,7 +309,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.blue,
                         ),
                         onPressed: () {
-                          // Handle Facebook login
+                          // Login Facebook
                         },
                       ),
                       const SizedBox(width: 20),
@@ -276,7 +320,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.lightBlueAccent,
                         ),
                         onPressed: () {
-                          // Handle Twitter login
+                          // login Twitter 
                         },
                       ),
                     ],
