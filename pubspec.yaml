@@ -27,3 +27,7 @@ flutter:
     - assets/images/illustration.png
     - assets/data/dummy.json
 
+  fonts:
+    - family: chewy
+      fonts:
+        - asset: assets/fonts/chewy/Chewy-Regular.ttf

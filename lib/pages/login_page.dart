@@ -70,6 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
+                      fontFamily: 'chewy'
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -79,6 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                       fontSize: 18,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'chewy'
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -86,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                   Image.asset('assets/images/illustration.png', height: 200),
                   const Text(
                     'Mentor Terbaikmu',
-                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold, fontFamily: 'chewy'),
                   ),
                   const SizedBox(height: 20),
                 ],
