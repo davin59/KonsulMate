@@ -3,11 +3,11 @@ import 'components/appbar_mentor.dart';
 import 'components/footer_mentor.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const HomepageMentor());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class HomepageMentor extends StatelessWidget {
+  const HomepageMentor({super.key});
 
   @override
   Widget build(BuildContext context) {
