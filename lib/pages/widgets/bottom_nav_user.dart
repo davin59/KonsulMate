@@ -1,0 +1,84 @@
+// ignore_for_file: unused_local_variable
+
+import 'package:flutter/material.dart';
+import '../user/user_home_page.dart';
+import '../user/listchat_user.dart';
+import '../user/search_page.dart';
+import '../user/user_history.dart';
+
+class BottomNavUser extends StatelessWidget {
+  final int currentIndex;
+  final String userName;
+
+  const BottomNavUser({
+    super.key,
+    required this.currentIndex,
+    required this.userName,
+  });
+
+  void _onItemTapped(BuildContext context, int index) {
+    if (index == currentIndex) return;
+    Widget page;
+    switch (index) {
+      case 0:
+        page = UserHomePage(userName: userName);
+        break;
+      case 1:
+        page = ListChatUser(userName: userName);
+        break;
+      case 2:
+        page = SearchPage(userName: userName);
+        break;
+      case 3:
+        page = UserHistoryPage(userName: userName);
+        break;
+      default:
+        page = UserHomePage(userName: userName);
+    }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => page),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 60,
+      decoration: const BoxDecoration(
+        color: Color(0xFF80C9FF),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildNavItem(context, 0, Icons.home_outlined),
+          _buildNavItem(context, 1, Icons.chat_bubble_outline),
+          _buildNavItem(context, 2, Icons.search),
+          _buildNavItem(context, 3, Icons.history),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(BuildContext context, int index, IconData icon) {
+    final isSelected = index == currentIndex;
+    return InkWell(
+      onTap: () => _onItemTapped(context, index),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        child: Icon(
+          icon,
+          color: Colors.white,
+          size: 28,
+        ),
+      ),
+    );
+  }
+}

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert'; // Untuk mengkonversi JSON
 import 'package:flutter/services.dart'
     show rootBundle; // Untuk mengambil file dari assets

@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
+import '../widgets/appbar_user.dart';
+import '../widgets/bottom_nav_user.dart';
 
 class UserHomePage extends StatefulWidget {
   final String userName;
@@ -161,40 +163,9 @@ class _UserHomePageState extends State<UserHomePage> {
       backgroundColor: const Color(0xFFB3E0FF),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.zero,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.userName,
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Temukan Mentor Terbaikmu',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.person, color: Colors.grey, size: 32),
-                ),
-              ],
-            ),
+            AppBarUser(userName: widget.userName),
             const SizedBox(height: 24),
             section('Top Mentor', topMentor != null ? [topMentor] : []),
             section('Raja Matematika', rajaMtk),
@@ -202,6 +173,10 @@ class _UserHomePageState extends State<UserHomePage> {
             section('Pebisnis', pebisnis),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavUser(
+        currentIndex: 0, 
+        userName: widget.userName, 
       ),
     );
   }
