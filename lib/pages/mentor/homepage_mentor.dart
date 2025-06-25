@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'components/appbar_mentor.dart';
+import 'components/footer_mentor.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +32,7 @@ class MentorProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Mentor Profile'),
         backgroundColor: Colors.blue.shade600,
-        foregroundColor: Colors.white, // Text and icon color
+        foregroundColor: Colors.white,
       ),
       body: const Center(
         child: Padding(
@@ -40,8 +42,7 @@ class MentorProfilePage extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 60,
-                backgroundImage: AssetImage(
-                    'assets/mentor_avatar.png'), // Use mentor's avatar
+                backgroundImage: AssetImage('assets/mentor_avatar.png'),
                 backgroundColor: Colors.grey,
               ),
               SizedBox(height: 20),
@@ -62,7 +63,6 @@ class MentorProfilePage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 30),
-              // Add more profile details here
               Text(
                 'Detail informasi tentang mentor akan ditampilkan di sini. '
                 'Ini bisa mencakup keahlian, pengalaman, dan kontak.',
@@ -83,52 +83,7 @@ class MentorHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue.shade600,
-        elevation: 0,
-        toolbarHeight: 80, // Adjust height as needed
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Nama Mentor',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 4),
-            Text(
-              'Asal Kampus',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: GestureDetector( // Wrapped with GestureDetector
-              onTap: () {
-                // Navigate to MentorProfilePage when mentor's avatar is tapped
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MentorProfilePage()),
-                );
-              },
-              child: CircleAvatar(
-                radius: 20,
-                backgroundImage: const AssetImage(
-                    'assets/mentor_avatar.png'), // Replace with your image asset
-                backgroundColor: Colors.grey, // Placeholder if image not found
-              ),
-            ),
-          ),
-        ],
-      ),
+      appBar: const MentorAppBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -141,30 +96,10 @@ class MentorHomePage extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.blue.shade600,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            label: '', // Empty label to mimic the image
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: '', // Empty label
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_outlined),
-            label: '', // Empty label
-          ),
-        ],
-        currentIndex: 1, // Highlight home icon as per image
+      bottomNavigationBar: MentorFooter(
+        currentIndex: 1,
         onTap: (index) {
           // Handle navigation for bottom bar
-          // For example:
-          // if (index == 0) {
-          //   Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage()));
-          // }
         },
       ),
     );
@@ -185,9 +120,8 @@ class MentorHomePage extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 35,
-                  backgroundImage: const AssetImage(
-                      'assets/client_avatar.png'), // Replace with your image asset
-                  backgroundColor: Colors.blueGrey, // Placeholder
+                  backgroundImage: const AssetImage('assets/client_avatar.png'),
+                  backgroundColor: Colors.blueGrey,
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -219,7 +153,7 @@ class MentorHomePage extends StatelessWidget {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Lokasi yang user pesahn', // Typo from image "pesahn"
+                        'Lokasi yang user pesahn',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
@@ -229,8 +163,7 @@ class MentorHomePage extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: Colors.blue.shade100,
                     borderRadius: BorderRadius.circular(8),
@@ -250,33 +183,27 @@ class MentorHomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    // Handle Tolak action
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red, // Background color
-                    foregroundColor: Colors.white, // Text color
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                   ),
                   child: const Text('Tolak'),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
-                  onPressed: () {
-                    // Handle Ambil action
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green, // Background color
-                    foregroundColor: Colors.white, // Text color
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                   ),
                   child: const Text('Ambil'),
                 ),

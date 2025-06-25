@@ -2,8 +2,9 @@ import 'dart:convert'; // Untuk mengkonversi JSON
 import 'package:flutter/services.dart'
     show rootBundle; // Untuk mengambil file dari assets
 import 'package:flutter/material.dart'; // Import UI toolkit Flutter
+import 'package:flutter_application_1/pages/mentor/homepage_mentor.dart' show MentorHomePage;
 import 'user/user_home_page.dart'; // Import halaman utama untuk user
-import 'mentor/mentor_home_page.dart'; // Import halaman utama untuk mentor
+import 'mentor/homepage_mentor.dart'; // Import halaman utama untuk mentor
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
