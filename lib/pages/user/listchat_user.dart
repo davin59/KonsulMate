@@ -24,7 +24,7 @@ class ListChatUser extends StatelessWidget {
             const SizedBox(height: 24),
             const Center(
               child: Text(
-                'Ini halaman list chat user.\nTes berhasil!',
+                'Fitur Ini Akan Tersedia di Versi Selanjutnya',
                 style: TextStyle(fontSize: 20),
                 textAlign: TextAlign.center,
               ),
