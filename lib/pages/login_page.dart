@@ -53,18 +53,16 @@ class _LoginPageState extends State<LoginPage> {
 
     if (user != null) {
       // Jika user ditemukan, arahkan ke halaman sesuai role
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder:
-              (context) =>
-                  isMentorSelected
-                      ? const MentorHomePage() // Jika mentor, ke halaman mentor
-                      : const UserHomePage(
-                        userName: '',
-                      ), // Jika user, ke halaman user
-        ),
-      );
+  final String userName = user['nama'] ?? '';
+  
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => isMentorSelected
+          ? const MentorHomePage() 
+          : UserHomePage(userName: userName), // Kirim nama user yang sesuai
+    ),
+  );
     } else {
       // Jika user tidak ditemukan, tampilkan pesan kesalahan
       ScaffoldMessenger.of(context).showSnackBar(
