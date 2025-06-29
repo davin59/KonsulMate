@@ -8,7 +8,12 @@ import '../widgets/bottom_nav_user.dart';
 
 class UserHomePage extends StatefulWidget {
   final String userName;
-  const UserHomePage({super.key, required this.userName});
+  final String userId;
+  const UserHomePage({
+    super.key, 
+    required this.userName,
+    required this.userId,
+    });
 
   @override
   State<UserHomePage> createState() => _UserHomePageState();
@@ -177,6 +182,7 @@ class _UserHomePageState extends State<UserHomePage> {
       bottomNavigationBar: BottomNavUser(
         currentIndex: 0, 
         userName: widget.userName, 
+        userId: widget.userId,
       ),
     );
   }

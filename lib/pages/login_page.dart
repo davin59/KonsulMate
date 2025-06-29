@@ -54,13 +54,17 @@ class _LoginPageState extends State<LoginPage> {
     if (user != null) {
       // Jika user ditemukan, arahkan ke halaman sesuai role
   final String userName = user['nama'] ?? '';
+  final String userId = user['id'] ?? '';
   
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(
       builder: (context) => isMentorSelected
           ? const MentorHomePage() 
-          : UserHomePage(userName: userName), // Kirim nama user yang sesuai
+          : UserHomePage(
+            userName: userName,
+            userId: userId,
+            ), // Kirim nama user yang sesuai
     ),
   );
     } else {

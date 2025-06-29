@@ -9,11 +9,13 @@ import '../user/user_history.dart';
 class BottomNavUser extends StatelessWidget {
   final int currentIndex;
   final String userName;
+  final String userId;
 
   const BottomNavUser({
     super.key,
     required this.currentIndex,
     required this.userName,
+    required this.userId,
   });
 
   void _onItemTapped(BuildContext context, int index) {
@@ -21,19 +23,30 @@ class BottomNavUser extends StatelessWidget {
     Widget page;
     switch (index) {
       case 0:
-        page = UserHomePage(userName: userName);
+        page = UserHomePage(
+          userName: userName,
+          userId: userId,);
         break;
       case 1:
-        page = ListChatUser(userName: userName);
+        page = ListChatUser(
+          userName: userName,
+          userId: userId,);
         break;
       case 2:
-        page = SearchPage(userName: userName);
+        page = SearchPage(
+          userName: userName,
+          userId: userId,);
         break;
       case 3:
-        page = UserHistoryPage(userName: userName);
+        page = UserHistoryPage(
+          userName: userName,
+          userId: userId,);
         break;
       default:
-        page = UserHomePage(userName: userName);
+        page = UserHomePage(
+          userName: userName,
+          userId: userId,
+          );
     }
     Navigator.pushReplacement(
       context,

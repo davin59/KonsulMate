@@ -4,8 +4,13 @@ import '../widgets/bottom_nav_user.dart';
 
 class SearchPage extends StatelessWidget {
   final String userName;
+  final String userId;
   
-  const SearchPage({super.key, required this.userName});
+  const SearchPage({
+    super.key, 
+    required this.userName,
+    required this.userId,
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +35,7 @@ class SearchPage extends StatelessWidget {
       bottomNavigationBar: BottomNavUser(
         currentIndex: 2, // Index 2 untuk halaman search
         userName: userName,
+        userId: userId,
       ),
     );
   }
