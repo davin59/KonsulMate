@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/appbar_user.dart';
-import '../widgets/bottom_nav_user.dart';
+import '../widgets/footer_user.dart';
 
 class ListChatUser extends StatelessWidget {
   final String userName;
@@ -32,7 +32,7 @@ class ListChatUser extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavUser(
+      bottomNavigationBar: FooterUser(
         currentIndex: 1, // Index 1 untuk halaman chat
         userName: userName,
         userId: userId,

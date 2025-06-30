@@ -3,23 +3,23 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../widgets/bottom_nav_user.dart';
+import '../widgets/footer_user.dart';
 
-class UserHistoryPage extends StatefulWidget {
+class HistoryUser extends StatefulWidget {
   final String userName;
   final String userId;
   
-  const UserHistoryPage({
+  const HistoryUser({
     super.key, 
     required this.userName,
     required this.userId,
   });
 
   @override
-  State<UserHistoryPage> createState() => _UserHistoryPageState();
+  State<HistoryUser> createState() => _UserHistoryPageState();
 }
 
-class _UserHistoryPageState extends State<UserHistoryPage> {
+class _UserHistoryPageState extends State<HistoryUser> {
   List<dynamic> userOrders = [];
   bool isLoading = true;
   
@@ -110,7 +110,7 @@ class _UserHistoryPageState extends State<UserHistoryPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavUser(
+      bottomNavigationBar: FooterUser(
         currentIndex: 3,
         userName: widget.userName,
         userId: widget.userId,

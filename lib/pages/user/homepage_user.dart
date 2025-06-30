@@ -4,23 +4,23 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import '../widgets/appbar_user.dart';
-import '../widgets/bottom_nav_user.dart';
+import '../widgets/footer_user.dart';
 import '../widgets/mentor_section.dart'; // Import widget baru
 
-class UserHomePage extends StatefulWidget {
+class HomeUser extends StatefulWidget {
   final String userName;
   final String userId;
-  const UserHomePage({
+  const HomeUser({
     super.key, 
     required this.userName,
     required this.userId,
     });
 
   @override
-  State<UserHomePage> createState() => _UserHomePageState();
+  State<HomeUser> createState() => _UserHomePageState();
 }
 
-class _UserHomePageState extends State<UserHomePage> {
+class _UserHomePageState extends State<HomeUser> {
   List<dynamic> mentors = [];
 
   @override
@@ -75,7 +75,7 @@ class _UserHomePageState extends State<UserHomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavUser(
+      bottomNavigationBar: FooterUser(
         currentIndex: 0, 
         userName: widget.userName, 
         userId: widget.userId,

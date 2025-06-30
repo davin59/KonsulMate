@@ -26,6 +26,7 @@ flutter:
   assets:
     - assets/images/illustration.png
     - assets/data/dummy.json
+    - assets/icons/
 
   fonts:
     - family: chewy

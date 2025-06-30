@@ -1,17 +1,17 @@
 // ignore_for_file: unused_local_variable
 
 import 'package:flutter/material.dart';
-import '../user/user_home_page.dart';
+import '../user/homepage_user.dart';
 import '../user/listchat_user.dart';
 import '../user/search_page.dart';
-import '../user/user_history.dart';
+import '../user/history_user.dart';
 
-class BottomNavUser extends StatelessWidget {
+class FooterUser extends StatelessWidget {
   final int currentIndex;
   final String userName;
   final String userId;
 
-  const BottomNavUser({
+  const FooterUser({
     super.key,
     required this.currentIndex,
     required this.userName,
@@ -23,7 +23,7 @@ class BottomNavUser extends StatelessWidget {
     Widget page;
     switch (index) {
       case 0:
-        page = UserHomePage(
+        page = HomeUser(
           userName: userName,
           userId: userId,);
         break;
@@ -38,12 +38,12 @@ class BottomNavUser extends StatelessWidget {
           userId: userId,);
         break;
       case 3:
-        page = UserHistoryPage(
+        page = HistoryUser(
           userName: userName,
           userId: userId,);
         break;
       default:
-        page = UserHomePage(
+        page = HomeUser(
           userName: userName,
           userId: userId,
           );

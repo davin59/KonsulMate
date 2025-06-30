@@ -1,49 +1,79 @@
 import 'package:flutter/material.dart';
-import '../listchat_mentor.dart'; // Pastikan path ini sesuai
-import '../history_mentor.dart'; // Tambahkan import ini
+import 'package:flutter_application_1/pages/mentor/homepage_mentor.dart';
+import '../listchat_mentor.dart';
+import '../history_mentor.dart';
 
-class MentorFooter extends StatelessWidget {
+class FooterMentor extends StatelessWidget {
   final int currentIndex;
-  final Function(int)? onTap;
+  final String userName;
+  final String userId;
 
-  const MentorFooter({super.key, this.currentIndex = 1, this.onTap});
+  const FooterMentor({
+    super.key,
+    required this.currentIndex,
+    required this.userName,
+    required this.userId,
+  });
+
+  void _onItemTapped(BuildContext context, int index) {
+    if (index == currentIndex) return;
+    Widget page;
+    switch (index) {
+      case 0:
+        page = HomepageMentor(userName: userName, userId: userId);
+        break;
+      case 1:
+        page = ListChatMentor(userName: userName, userId: userId);
+        break;
+      case 2:
+        page = HistoryMentor(userName: userName, userId: userId);
+        break;
+      default:
+        page = HomepageMentor(userName: userName, userId: userId);
+    }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => page),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      selectedItemColor: Colors.blue.shade600,
-      unselectedItemColor: Colors.grey,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.chat_bubble_outline),
-          label: '',
+    return Container(
+      height: 60,
+      decoration: const BoxDecoration(
+        color: Color(0xFF80C9FF),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildNavItem(context, 0, Icons.home_outlined),
+          _buildNavItem(context, 1, Icons.chat_bubble_outline),
+          _buildNavItem(context, 2, Icons.history),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(BuildContext context, int index, IconData icon) {
+    final isSelected = index == currentIndex;
+    return InkWell(
+      onTap: () => _onItemTapped(context, index),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        child: Icon(
+          icon,
+          color: isSelected ? Colors.yellow : Colors.white,
+          size: 28,
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.assignment_outlined),
-          label: '',
-        ),
-      ],
-      currentIndex: currentIndex,
-      onTap: (index) {
-        if (onTap != null) {
-          onTap!(index);
-        }
-        if (index == 0) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ListChatMentor()),
-          );
-        } else if (index == 2) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const HistoryMentor()),
-          );
-        }
-      },
+      ),
     );
   }
 }

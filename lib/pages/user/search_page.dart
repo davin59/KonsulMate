@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../widgets/appbar_user.dart';
-import '../widgets/bottom_nav_user.dart';
+import '../widgets/footer_user.dart';
 import '../widgets/mentor_section.dart';
 
 class SearchPage extends StatefulWidget {
@@ -248,7 +248,7 @@ class _SearchPageState extends State<SearchPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavUser(
+      bottomNavigationBar: FooterUser(
         currentIndex: 2,
         userName: widget.userName,
         userId: widget.userId,

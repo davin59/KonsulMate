@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Edit Profile UI',
+      title: 'Edit Profile',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -23,314 +21,350 @@ class MyApp extends StatelessWidget {
 }
 
 class EditProfileScreen extends StatefulWidget {
-  final Map<String, dynamic>? mentorData; // Tambahan: menerima data mentor
-  const EditProfileScreen({super.key, this.mentorData});
+  const EditProfileScreen({super.key});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final TextEditingController _namaLengkapController = TextEditingController();
-  final TextEditingController _jenisKelaminController = TextEditingController();
-  final TextEditingController _noHpController = TextEditingController();
-  final TextEditingController _asalKampusController = TextEditingController();
-  final TextEditingController _prodiController = TextEditingController();
-  final TextEditingController _keahlianController = TextEditingController();
-  final TextEditingController _toolsController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _deskripsiController = TextEditingController();
+  // Provided data (extended to include new fields)
+  String fullName = "Davin Vergian Rizapratama";
+  String gender = "Laki-laki";
+  String phoneNumber = "081276571881";
+  String originCampus = "Universitas Ahmad Dahlan";
+  String major = "Sistem Informasi";
+  String expertise = "Frontend Developer,Data Analys, dll";
+  String toolsMastered = "Ms Word, Javascript, TailWind"; // New field
+  String email = "Davinvergian01@gmail.com"; // New field
+  String password = "***********"; // New field (obscured)
+  String shortDescription =
+      "Bla balabbalabalbalbalbalbalblablablabla\n"
+      "Bla balabbalabalbalbalbalbalblablablabla\n"
+      "Bla balabbalabalbalbalbalbalblablablabla\n"
+      "Bla balabbalabalbalbalbalbalblablablabla\n"
+      "Bla balabbalabalbalbalbalbalblablablabla\n"
+      "Bla balabbalabalbalbalbal"; // New field
 
-  bool _obscureText = true;
+  // Controllers for potential editing
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _campusController = TextEditingController();
+  final TextEditingController _majorController = TextEditingController();
+  final TextEditingController _expertiseController = TextEditingController();
+  final TextEditingController _toolsController =
+      TextEditingController(); // New controller
+  final TextEditingController _emailController =
+      TextEditingController(); // New controller
+  final TextEditingController _passwordController =
+      TextEditingController(); // New controller
+  final TextEditingController _descriptionController =
+      TextEditingController(); // New controller
+
+  bool _isPasswordVisible = false; // For the password field eye icon
 
   @override
   void initState() {
     super.initState();
-    if (widget.mentorData != null) {
-      _setMentorData(widget.mentorData!);
-    } else {
-      _loadMentorData();
-    }
-  }
-
-  void _setMentorData(Map<String, dynamic> mentor) {
-    _namaLengkapController.text = mentor['nama'] ?? '';
-    _jenisKelaminController.text = mentor['jenis_kelamin'] ?? '';
-    _noHpController.text = mentor['no_hp'] ?? '';
-    _asalKampusController.text = mentor['asal_kampus'] ?? '';
-    _prodiController.text = mentor['prodi'] ?? '';
-    _keahlianController.text = mentor['keahlian'] ?? '';
-    _toolsController.text = mentor['tools'] ?? '';
-    _emailController.text = mentor['email'] ?? '';
-    _passwordController.text = mentor['password'] ?? '';
-    _deskripsiController.text = mentor['deskripsi'] ?? '';
-  }
-
-  Future<void> _loadMentorData() async {
-    final String data = await rootBundle.loadString('assets/data/dummy.json');
-    final jsonData = json.decode(data);
-    final List mentors = jsonData['mentor'];
-    final mentor = mentors.firstWhere(
-      (m) => m['id'] == 'm1',
-      orElse: () => null,
-    );
-
-    if (mentor != null) {
-      setState(() {
-        _namaLengkapController.text = mentor['nama'] ?? '';
-        _jenisKelaminController.text = mentor['jenis_kelamin'] ?? '';
-        _noHpController.text = mentor['no_hp'] ?? '';
-        _asalKampusController.text = mentor['asal_kampus'] ?? '';
-        _prodiController.text = mentor['prodi'] ?? '';
-        _keahlianController.text = mentor['keahlian'] ?? '';
-        _toolsController.text = mentor['tools'] ?? '';
-        _emailController.text = mentor['email'] ?? '';
-        _passwordController.text = mentor['password'] ?? '';
-        _deskripsiController.text = mentor['deskripsi'] ?? '';
-      });
-    }
+    _fullNameController.text = fullName;
+    _genderController.text = gender;
+    _phoneController.text = phoneNumber;
+    _campusController.text = originCampus;
+    _majorController.text = major;
+    _expertiseController.text = expertise;
+    _toolsController.text = toolsMastered; // Initialize new controller
+    _emailController.text = email; // Initialize new controller
+    _passwordController.text = password; // Initialize new controller
+    _descriptionController.text = shortDescription; // Initialize new controller
   }
 
   @override
   void dispose() {
-    _namaLengkapController.dispose();
-    _jenisKelaminController.dispose();
-    _noHpController.dispose();
-    _asalKampusController.dispose();
-    _prodiController.dispose();
-    _keahlianController.dispose();
+    _fullNameController.dispose();
+    _genderController.dispose();
+    _phoneController.dispose();
+    _campusController.dispose();
+    _majorController.dispose();
+    _expertiseController.dispose();
     _toolsController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _deskripsiController.dispose();
+    _descriptionController.dispose();
     super.dispose();
+  }
+
+  Widget _buildProfileField({
+    required String label,
+    required String value,
+    required IconData icon,
+    TextEditingController? controller,
+    bool readOnly = true,
+    VoidCallback? onTap,
+    bool isPassword = false,
+    int? maxLines = 1, // Ubah dari int maxLines = 1 menjadi int? maxLines = 1
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+          const SizedBox(height: 5),
+          GestureDetector(
+            onTap: onTap,
+            child: AbsorbPointer(
+              absorbing: readOnly,
+              child: TextField(
+                controller: controller,
+                readOnly: readOnly,
+                obscureText: isPassword && !_isPasswordVisible,
+                maxLines: maxLines, // Set maxLines for description field
+                decoration: InputDecoration(
+                  suffixIcon:
+                      isPassword
+                          ? IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Colors.black54,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          )
+                          : Icon(icon, color: Colors.black54),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                  isDense: true,
+                  hintText: value,
+                ),
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+          const Divider(color: Colors.grey, thickness: 1),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue.shade600,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: const Text(
-          'Edit Profile',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: () {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Profile saved!')));
-            },
-            child: const Text(
-              'Save',
-              style: TextStyle(color: Colors.white, fontSize: 18),
+      body: Column(
+        children: [
+          // Blue Header with Profile Picture and App Bar elements
+          Container(
+            height: MediaQuery.of(context).size.height * 0.35,
+            width: double.infinity,
+            color: Colors.lightBlue,
+            child: Stack(
+              children: [
+                // App Bar elements
+                Positioned(
+                  top: 40,
+                  left: 10,
+                  right: 10,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      const Text(
+                        'Edit Profile',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Save profile logic
+                          ('Save button pressed');
+                        },
+                        child: const Text(
+                          'Save',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Profile Picture
+                Positioned(
+                  bottom: 20,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 3),
+                            image: const DecorationImage(
+                              image: AssetImage(
+                                'assets/profile_pic.jpg',
+                              ), // Ensure this path is correct
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          // Placeholder if image not available
+                          child:
+                              (const AssetImage('assets/profile_pic.jpg') ==
+                                      null)
+                                  ? const Icon(
+                                    Icons.person,
+                                    size: 80,
+                                    color: Colors.white,
+                                  )
+                                  : null,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          child: const Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Profile Picture Section
-            Container(
-              width: double.infinity,
-              height: 200,
-              color: Colors.blue.shade600,
-              child: Center(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    const CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.person, size: 80, color: Colors.grey),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.blue, width: 2),
-                        ),
-                        child: Icon(
-                          Icons.add_circle,
-                          color: Colors.blue,
-                          size: 30,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // Profile Details Section
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 20.0,
-              ),
+          Expanded(
+            child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildProfileInputField(
+                  const SizedBox(height: 20),
+                  _buildProfileField(
                     label: 'Nama Lengkap',
-                    controller: _namaLengkapController,
-                    suffixIcon: Icons.person_outline,
+                    value: fullName,
+                    icon: Icons.person_outline,
+                    controller: _fullNameController,
+                    readOnly: false, // Make this editable
                   ),
-                  _buildProfileInputField(
+                  _buildProfileField(
                     label: 'Jenis Kelamin',
-                    controller: _jenisKelaminController,
-                    suffixIcon: Icons.male,
-                  ),
-                  _buildProfileInputField(
-                    label: 'No Hp',
-                    controller: _noHpController,
-                    suffixIcon: Icons.phone,
-                    keyboardType: TextInputType.phone,
-                  ),
-                  _buildProfileInputField(
-                    label: 'Asal Kampus',
-                    controller: _asalKampusController,
-                    suffixIcon: Icons.school_outlined,
-                  ),
-                  _buildProfileInputField(
-                    label: 'Prodi',
-                    controller: _prodiController,
-                    suffixIcon: Icons.square_foot_outlined,
-                  ),
-                  _buildProfileInputField(
-                    label: 'Keahlian',
-                    controller: _keahlianController,
-                    suffixIcon: Icons.workspace_premium_outlined,
-                  ),
-                  _buildProfileInputField(
-                    label: 'Tools yang di kuasai',
-                    controller: _toolsController,
-                    suffixIcon: Icons.build_outlined,
-                  ),
-                  _buildProfileInputField(
-                    label: 'Email',
-                    controller: _emailController,
-                    suffixIcon: Icons.email_outlined,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  _buildProfileInputField(
-                    label: 'Password',
-                    controller: _passwordController,
-                    obscureText: _obscureText,
-                    suffixIcon:
-                        _obscureText
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                    onSuffixIconPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
+                    value: gender,
+                    icon: Icons.male,
+                    controller: _genderController,
+                    onTap: () {
+                      // Implement gender selection (e.g., show dropdown/modal)
+                      ('Gender field tapped for selection!');
                     },
                   ),
-                  _buildProfileInputField(
-                    label: 'Deskripsi Singkat',
-                    controller: _deskripsiController,
-                    maxLines: 7,
-                    suffixIcon: Icons.description_outlined,
+                  _buildProfileField(
+                    label: 'No Hp',
+                    value: phoneNumber,
+                    icon: Icons.call,
+                    controller: _phoneController,
+                    readOnly: false,
                   ),
-                  const SizedBox(height: 30),
-                  Center(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      child: OutlinedButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Logging out...')),
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red,
+                  _buildProfileField(
+                    label: 'Asal Kampus',
+                    value: originCampus,
+                    icon: Icons.house_outlined,
+                    controller: _campusController,
+                    readOnly: false,
+                  ),
+                  _buildProfileField(
+                    label: 'Prodi',
+                    value: major,
+                    icon: Icons.school,
+                    controller: _majorController,
+                    readOnly: false,
+                  ),
+                  _buildProfileField(
+                    label: 'Keahlian',
+                    value: expertise,
+                    icon: Icons.military_tech,
+                    controller: _expertiseController,
+                    readOnly: false,
+                  ),
+                  // New fields to be displayed on scroll
+                  _buildProfileField(
+                    label: 'Tools yang di kuasai',
+                    value: toolsMastered,
+                    icon: Icons.build,
+                    controller: _toolsController,
+                    readOnly: false,
+                  ),
+                  _buildProfileField(
+                    label: 'Email',
+                    value: email,
+                    icon: Icons.mail_outline, // Adjusted icon
+                    controller: _emailController,
+                    readOnly: false,
+                  ),
+                  _buildProfileField(
+                    label: 'Password',
+                    value: password,
+                    icon: Icons.remove_red_eye_outlined,
+                    controller: _passwordController,
+                    isPassword: true, // Mark as password field
+                    readOnly: false,
+                  ),
+                  _buildProfileField(
+                    label: 'Deskripsi Singkat',
+                    value: shortDescription,
+                    icon: Icons.description,
+                    controller: _descriptionController,
+                    readOnly: false,
+                    maxLines: null, // Allow unlimited lines for description
+                  ),
+                  const SizedBox(height: 40),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 25),
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Log Out logic
+                        ('Log Out button pressed!');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
                           side: const BorderSide(color: Colors.red),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: const Text(
-                          'Log Out',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        elevation: 2,
+                      ),
+                      child: const Text(
+                        'Log Out',
+                        style: TextStyle(fontSize: 18, color: Colors.red),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfileInputField({
-    required String label,
-    required TextEditingController controller,
-    IconData? suffixIcon,
-    TextInputType keyboardType = TextInputType.text,
-    bool obscureText = false,
-    int? maxLines = 1,
-    VoidCallback? onSuffixIconPressed,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-          ),
-          TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            obscureText: obscureText,
-            maxLines: maxLines,
-            decoration: InputDecoration(
-              suffixIcon:
-                  suffixIcon != null
-                      ? IconButton(
-                        icon: Icon(suffixIcon, color: Colors.black54),
-                        onPressed: onSuffixIconPressed,
-                      )
-                      : null,
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade400),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue.shade600, width: 2),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-                horizontal: 0,
-              ),
-            ),
-            style: const TextStyle(fontSize: 18),
           ),
         ],
       ),

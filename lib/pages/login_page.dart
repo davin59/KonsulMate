@@ -4,12 +4,14 @@ import 'dart:convert'; // Untuk mengkonversi JSON
 import 'package:flutter/services.dart'
     show rootBundle; // Untuk mengambil file dari assets
 import 'package:flutter/material.dart'; // Import UI toolkit Flutter
-import 'package:flutter_application_1/pages/mentor/homepage_mentor.dart' show MentorHomePage;
-import 'user/user_home_page.dart'; // Import halaman utama untuk user
+import 'user/homepage_user.dart'; // Import halaman utama untuk user
 import 'mentor/homepage_mentor.dart'; // Import halaman utama untuk mentor
+import 'mentor/regis_mentor.dart'; // Tambahkan import ini
+import 'user/regis_user.dart'; // Tambahkan import ini
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+  
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -22,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
       TextEditingController(); // Controller untuk input password
   bool isMentorSelected =
       false; // Boolean untuk mengecek apakah login sebagai mentor atau user
+      
 
   // Fungsi untuk memuat data dari file JSON lokal
   Future<Map<String, dynamic>> loadJsonData() async {
@@ -53,20 +56,23 @@ class _LoginPageState extends State<LoginPage> {
 
     if (user != null) {
       // Jika user ditemukan, arahkan ke halaman sesuai role
-  final String userName = user['nama'] ?? '';
-  final String userId = user['id'] ?? '';
-  
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(
-      builder: (context) => isMentorSelected
-          ? const MentorHomePage() 
-          : UserHomePage(
-            userName: userName,
-            userId: userId,
-            ), // Kirim nama user yang sesuai
-    ),
-  );
+      final String userName = user['nama'] ?? '';
+      final String userId = user['id'] ?? '';
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder:
+              (context) =>
+                  isMentorSelected
+                      // Ganti MentorHomePage menjadi HomepageMentor
+                      ? HomepageMentor(userName: userName, userId: userId)
+                      : HomeUser(
+                        userName: userName,
+                        userId: userId,
+                      ), // Kirim nama user yang sesuai
+        ),
+      );
     } else {
       // Jika user tidak ditemukan, tampilkan pesan kesalahan
       ScaffoldMessenger.of(context).showSnackBar(
@@ -248,7 +254,23 @@ class _LoginPageState extends State<LoginPage> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // Fungsi saat tombol daftar ditekan (belum diimplementasi)
+                            if (isMentorSelected) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const RegisterMentorScreen(),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const RegisterUserScreen(),
+                                ),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue[800], // Warna tombol
@@ -303,7 +325,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.black54,
                         ),
                         onPressed: () {
-                          // login email 
+                          // login email
                         },
                       ),
                       const SizedBox(width: 20),
@@ -325,7 +347,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.lightBlueAccent,
                         ),
                         onPressed: () {
-                          // login Twitter 
+                          // login Twitter
                         },
                       ),
                     ],

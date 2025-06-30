@@ -3,21 +3,29 @@ import 'components/appbar_mentor.dart';
 import 'components/footer_mentor.dart';
 
 void main() {
-  runApp(const HomepageMentor());
+  runApp(const HomepageMentor(userName: 'John Doe', userId: '12345'));
 }
 
 class HomepageMentor extends StatelessWidget {
-  const HomepageMentor({super.key});
+  final String userName;
+  final String userId;
+
+  const HomepageMentor({
+    super.key,
+    required this.userName,
+    required this.userId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mentor App UI',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const MentorHomePage(),
+      home: MentorHomePage(userName: userName, userId: userId),
     );
   }
 }
@@ -57,10 +65,7 @@ class MentorProfilePage extends StatelessWidget {
               SizedBox(height: 8),
               Text(
                 'Asal Kampus',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 20, color: Colors.grey),
               ),
               SizedBox(height: 30),
               Text(
@@ -78,29 +83,61 @@ class MentorProfilePage extends StatelessWidget {
 }
 
 class MentorHomePage extends StatelessWidget {
-  const MentorHomePage({super.key});
+  final String userName;
+  final String userId;
+
+  // Simulate whether there are any orders
+  final bool hasOrders =
+      false; // Set to true to show the card, false to show the image
+
+  const MentorHomePage({
+    super.key,
+    required this.userName,
+    required this.userId,
+    // this.hasOrders = true, // You might get this from a real data source
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const MentorAppBar(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildClientCard(context),
-              // You can add more client cards or other content here
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: MentorFooter(
-        currentIndex: 1,
-        onTap: (index) {
-          // Handle navigation for bottom bar
-        },
+      body:
+          hasOrders
+              ? SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildClientCard(context),
+                      // You can add more client cards or other content here
+                    ],
+                  ),
+                ),
+              )
+              : Center(
+                child: SizedBox.expand(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/icons/bingung.png',
+                        width: 200,
+                        height: 200,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Belum ada pesanan yang masuk',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+      bottomNavigationBar: FooterMentor(
+        currentIndex: 0,
+        userName: userName,
+        userId: userId,
       ),
     );
   }
@@ -108,9 +145,7 @@ class MentorHomePage extends StatelessWidget {
   Widget _buildClientCard(BuildContext context) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -138,32 +173,26 @@ class MentorHomePage extends StatelessWidget {
                       SizedBox(height: 4),
                       Text(
                         '2 Jam',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       SizedBox(height: 4),
                       Text(
                         '14:30 20/8/2025',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       SizedBox(height: 4),
                       Text(
                         'Lokasi yang user pesahn',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.blue.shade100,
                     borderRadius: BorderRadius.circular(8),
@@ -190,7 +219,10 @@ class MentorHomePage extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 10,
+                    ),
                   ),
                   child: const Text('Tolak'),
                 ),
@@ -203,7 +235,10 @@ class MentorHomePage extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 10,
+                    ),
                   ),
                   child: const Text('Ambil'),
                 ),
