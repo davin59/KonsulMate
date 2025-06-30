@@ -23,30 +23,19 @@ class FooterUser extends StatelessWidget {
     Widget page;
     switch (index) {
       case 0:
-        page = HomeUser(
-          userName: userName,
-          userId: userId,);
+        page = HomeUser(userName: userName, userId: userId);
         break;
       case 1:
-        page = ListChatUser(
-          userName: userName,
-          userId: userId,);
+        page = ListChatUser(userName: userName, userId: userId);
         break;
       case 2:
-        page = SearchPage(
-          userName: userName,
-          userId: userId,);
+        page = SearchPage(userName: userName, userId: userId);
         break;
       case 3:
-        page = HistoryUser(
-          userName: userName,
-          userId: userId,);
+        page = HistoryUser(userName: userName, userId: userId);
         break;
       default:
-        page = HomeUser(
-          userName: userName,
-          userId: userId,
-          );
+        page = HomeUser(userName: userName, userId: userId);
     }
     Navigator.pushReplacement(
       context,
@@ -80,17 +69,30 @@ class FooterUser extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(BuildContext context, int index, IconData icon) {
+  Widget _buildNavItem(
+    BuildContext context,
+    int index,
+    IconData icon, {
+    double iconSize = 28,
+    double boxSize = 48,
+  }) {
     final isSelected = index == currentIndex;
     return InkWell(
       onTap: () => _onItemTapped(context, index),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 28,
-        ),
+      child: SizedBox(
+        width: boxSize,
+        height: boxSize,
+        child:
+            isSelected
+                ? Container(
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white24,
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(icon, color: Colors.white, size: iconSize),
+                )
+                : Icon(icon, color: Colors.white, size: iconSize),
       ),
     );
   }

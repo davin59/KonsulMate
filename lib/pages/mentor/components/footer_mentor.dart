@@ -54,25 +54,44 @@ class FooterMentor extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          _buildNavItem(
+            context,
+            1,
+            Icons.chat_bubble_outline,
+            iconSize: 22,
+            boxSize: 40,
+          ),
           _buildNavItem(context, 0, Icons.home_outlined),
-          _buildNavItem(context, 1, Icons.chat_bubble_outline),
           _buildNavItem(context, 2, Icons.history),
         ],
       ),
     );
   }
 
-  Widget _buildNavItem(BuildContext context, int index, IconData icon) {
+  Widget _buildNavItem(
+    BuildContext context,
+    int index,
+    IconData icon, {
+    double iconSize = 28,
+    double boxSize = 48,
+  }) {
     final isSelected = index == currentIndex;
     return InkWell(
       onTap: () => _onItemTapped(context, index),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        child: Icon(
-          icon,
-          color: isSelected ? Colors.yellow : Colors.white,
-          size: 28,
-        ),
+      child: SizedBox(
+        width: boxSize,
+        height: boxSize,
+        child:
+            isSelected
+                ? Container(
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white24, // warna lingkaran transparan
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(icon, color: Colors.white, size: iconSize),
+                )
+                : Icon(icon, color: Colors.white, size: iconSize),
       ),
     );
   }
