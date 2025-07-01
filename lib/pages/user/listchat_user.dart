@@ -5,17 +5,13 @@ import '../widgets/footer_user.dart';
 class ListChatUser extends StatelessWidget {
   final String userName;
   final String userId;
-  
-  const ListChatUser({
-    super.key, 
-    required this.userName,
-    required this.userId,
-  });
+
+  const ListChatUser({super.key, required this.userName, required this.userId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFB3E0FF),
+      backgroundColor: const Color(0xFFF6F7FB), // putih pudar
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.zero,

@@ -10,11 +10,7 @@ import '../widgets/mentor_section.dart'; // Import widget baru
 class HomeUser extends StatefulWidget {
   final String userName;
   final String userId;
-  const HomeUser({
-    super.key, 
-    required this.userName,
-    required this.userId,
-    });
+  const HomeUser({super.key, required this.userName, required this.userId});
 
   @override
   State<HomeUser> createState() => _UserHomePageState();
@@ -38,37 +34,65 @@ class _UserHomePageState extends State<HomeUser> {
   }
 
   List<dynamic> filterAndSortMentor(List<String> keywords) {
-    final filtered = mentors.where((m) {
-      final keahlian = (m['keahlian'] ?? '').toString().toLowerCase();
-      final prodi = (m['prodi'] ?? '').toString().toLowerCase();
-      return keywords.any((k) => keahlian.contains(k) || prodi.contains(k));
-    }).toList();
-    filtered.sort((a, b) => (b['rateing'] as num).compareTo(a['rateing'] as num));
+    final filtered =
+        mentors.where((m) {
+          final keahlian = (m['keahlian'] ?? '').toString().toLowerCase();
+          final prodi = (m['prodi'] ?? '').toString().toLowerCase();
+          return keywords.any((k) => keahlian.contains(k) || prodi.contains(k));
+        }).toList();
+    filtered.sort(
+      (a, b) => (b['rateing'] as num).compareTo(a['rateing'] as num),
+    );
     return filtered;
   }
 
   dynamic getTopMentor() {
     if (mentors.isEmpty) return null;
-    mentors.sort((a, b) => (b['rateing'] as num).compareTo(a['rateing'] as num));
+    mentors.sort(
+      (a, b) => (b['rateing'] as num).compareTo(a['rateing'] as num),
+    );
     return mentors.first;
   }
 
   @override
   Widget build(BuildContext context) {
-    final rajaMtk = filterAndSortMentor(['matematika', 'aljabar', 'kalkulus', 'statistik', 'logika']);
-    final jagoNgoding = filterAndSortMentor(['programming', 'web', 'android', 'informatika', 'developer', 'coding']);
-    final pebisnis = filterAndSortMentor(['bisnis', 'manajemen', 'wirausaha', 'startup', 'umkm', 'marketing']);
+    final rajaMtk = filterAndSortMentor([
+      'matematika',
+      'aljabar',
+      'kalkulus',
+      'statistik',
+      'logika',
+    ]);
+    final jagoNgoding = filterAndSortMentor([
+      'programming',
+      'web',
+      'android',
+      'informatika',
+      'developer',
+      'coding',
+    ]);
+    final pebisnis = filterAndSortMentor([
+      'bisnis',
+      'manajemen',
+      'wirausaha',
+      'startup',
+      'umkm',
+      'marketing',
+    ]);
     final topMentor = getTopMentor();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFB3E0FF),
+      backgroundColor: const Color(0xFFF6F7FB), // putih pudar
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.zero,
           children: [
             AppBarUser(userName: widget.userName),
             const SizedBox(height: 24),
-            MentorSection(title: 'Top Mentor', mentorList: topMentor != null ? [topMentor] : []),
+            MentorSection(
+              title: 'Top Mentor',
+              mentorList: topMentor != null ? [topMentor] : [],
+            ),
             MentorSection(title: 'Raja Matematika', mentorList: rajaMtk),
             MentorSection(title: 'Jago Ngoding', mentorList: jagoNgoding),
             MentorSection(title: 'Pebisnis', mentorList: pebisnis),
@@ -76,8 +100,8 @@ class _UserHomePageState extends State<HomeUser> {
         ),
       ),
       bottomNavigationBar: FooterUser(
-        currentIndex: 0, 
-        userName: widget.userName, 
+        currentIndex: 0,
+        userName: widget.userName,
         userId: widget.userId,
       ),
     );

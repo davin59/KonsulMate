@@ -1,53 +1,64 @@
 import 'package:flutter/material.dart';
+import '../user/profilepage_user.dart';
 
-class AppBarUser extends StatelessWidget {
+class AppBarUser extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
-  const AppBarUser({super.key, required this.userName});
+  final String asalKampus;
+  const AppBarUser({
+    super.key,
+    required this.userName,
+    this.asalKampus = "Asal Kampus",
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF80C9FF),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
-        ),
-      ),
-      padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-      child: Row(
+    return AppBar(
+      backgroundColor: const Color(0xFF80C9FF),
+      elevation: 0,
+      toolbarHeight: 80,
+      title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  userName,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Temukan Mentor Terbaikmu',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
+          Text(
+            userName,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          const CircleAvatar(
-            radius: 36,
-            backgroundColor: Color(0xFFD9D9D9),
-            child: Icon(Icons.person, color: Colors.white, size: 40),
+          const SizedBox(height: 4),
+          Text(
+            asalKampus,
+            style: const TextStyle(color: Colors.white70, fontSize: 16),
           ),
         ],
       ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16.0),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          const UserProfilePage(), // gunakan UserProfilePage
+                ),
+              );
+            },
+            child: const CircleAvatar(
+              radius: 20,
+              backgroundImage: AssetImage('assets/mentor_avatar.png'),
+              backgroundColor: Colors.grey,
+            ),
+          ),
+        ),
+      ],
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(80);
 }

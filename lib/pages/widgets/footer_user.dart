@@ -61,7 +61,12 @@ class FooterUser extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildNavItem(context, 0, Icons.home_outlined),
-          _buildNavItem(context, 1, Icons.chat_bubble_outline),
+          _buildNavItem(
+            context,
+            1,
+            Icons.chat_bubble_outline,
+            iconSize: 22,
+          ), // icon chat lebih kecil
           _buildNavItem(context, 2, Icons.search),
           _buildNavItem(context, 3, Icons.history),
         ],
