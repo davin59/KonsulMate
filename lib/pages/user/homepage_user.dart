@@ -10,7 +10,13 @@ import '../widgets/mentor_section.dart'; // Import widget baru
 class HomeUser extends StatefulWidget {
   final String userName;
   final String userId;
-  const HomeUser({super.key, required this.userName, required this.userId});
+  final String asalKampus; // Tambahkan ini
+  const HomeUser({
+    super.key,
+    required this.userName,
+    required this.userId,
+    this.asalKampus = "",
+  });
 
   @override
   State<HomeUser> createState() => _UserHomePageState();
@@ -82,12 +88,15 @@ class _UserHomePageState extends State<HomeUser> {
     final topMentor = getTopMentor();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB), // putih pudar
+      backgroundColor: const Color(0xFFF6F7FB),
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            AppBarUser(userName: widget.userName),
+            AppBarUser(
+              userName: widget.userName,
+              asalKampus: widget.asalKampus, // Kirim asalKampus ke AppBarUser
+            ),
             const SizedBox(height: 24),
             MentorSection(
               title: 'Top Mentor',

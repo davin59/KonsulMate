@@ -1,0 +1,32 @@
+    groovy
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 33
+
+    defaultConfig {
+        applicationId "com.example.konsulmate"
+        minSdkVersion 23
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0"
+
+        // Add this line
+        ndkVersion "27.0.12077973"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
+    // ... other dependencies ...
+}
+
+// Apply the Google Services plugin
+apply plugin: 'com.google.gms.google-services'

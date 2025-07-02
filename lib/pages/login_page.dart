@@ -8,10 +8,11 @@ import 'user/homepage_user.dart'; // Import halaman utama untuk user
 import 'mentor/homepage_mentor.dart'; // Import halaman utama untuk mentor
 import 'mentor/regis_mentor.dart'; // Tambahkan import ini
 import 'user/regis_user.dart'; // Tambahkan import ini
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-  
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -24,7 +25,6 @@ class _LoginPageState extends State<LoginPage> {
       TextEditingController(); // Controller untuk input password
   bool isMentorSelected =
       false; // Boolean untuk mengecek apakah login sebagai mentor atau user
-      
 
   // Fungsi untuk memuat data dari file JSON lokal
   Future<Map<String, dynamic>> loadJsonData() async {
@@ -77,6 +77,63 @@ class _LoginPageState extends State<LoginPage> {
       // Jika user tidak ditemukan, tampilkan pesan kesalahan
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Email atau password salah!')),
+      );
+    }
+  }
+
+  // Fungsi login dengan Firebase Auth dan cek role di Firestore
+  Future<void> handleFirebaseLogin(BuildContext context) async {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+
+    try {
+      // Login ke Firebase Auth
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      String uid = userCredential.user!.uid;
+
+      // Cek di koleksi 'users'
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      if (userDoc.exists && userDoc['role'] == 'user') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => HomeUser(
+                  userName: userDoc['nama_lengkap'] ?? '',
+                  userId: uid,
+                  asalKampus: userDoc['asal_kampus'] ?? '',
+                ),
+          ),
+        );
+        return;
+      }
+
+      // Cek di koleksi 'mentors'
+      DocumentSnapshot mentorDoc =
+          await FirebaseFirestore.instance.collection('mentors').doc(uid).get();
+      if (mentorDoc.exists && mentorDoc['role'] == 'mentor') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => HomepageMentor(
+                  userName: mentorDoc['nama_lengkap'] ?? '',
+                  userId: uid,
+                ),
+          ),
+        );
+        return;
+      }
+
+      // Jika tidak ditemukan role
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Role tidak ditemukan di Firestore!')),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? 'Email atau password salah!')),
       );
     }
   }
@@ -289,7 +346,8 @@ class _LoginPageState extends State<LoginPage> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            handleMasuk(context); // Panggil fungsi login
+                            // Ganti handleMasuk(context) menjadi handleFirebaseLogin(context)
+                            handleFirebaseLogin(context);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue[800],

@@ -1,7 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="latihan_flutter"
-        android:name="${applicationName}"
+        android:label="Konsulmate_flutter"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
@@ -42,4 +41,5 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+</manifest>
 </manifest>
