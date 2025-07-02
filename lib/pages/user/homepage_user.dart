@@ -5,12 +5,12 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import '../widgets/appbar_user.dart';
 import '../widgets/footer_user.dart';
-import '../widgets/mentor_section.dart'; // Import widget baru
+import '../widgets/mentor_section.dart';
 
 class HomeUser extends StatefulWidget {
   final String userName;
   final String userId;
-  final String asalKampus; // Tambahkan ini
+  final String asalKampus;
   const HomeUser({
     super.key,
     required this.userName,
@@ -95,7 +95,8 @@ class _UserHomePageState extends State<HomeUser> {
           children: [
             AppBarUser(
               userName: widget.userName,
-              asalKampus: widget.asalKampus, // Kirim asalKampus ke AppBarUser
+              asalKampus: widget.asalKampus,
+              userId: widget.userId, // Tambahkan userId untuk Firestore
             ),
             const SizedBox(height: 24),
             MentorSection(
@@ -112,6 +113,7 @@ class _UserHomePageState extends State<HomeUser> {
         currentIndex: 0,
         userName: widget.userName,
         userId: widget.userId,
+        asalKampus: widget.asalKampus, 
       ),
     );
   }

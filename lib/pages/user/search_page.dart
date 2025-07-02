@@ -8,8 +8,14 @@ import '../widgets/mentor_section.dart';
 class SearchPage extends StatefulWidget {
   final String userName;
   final String userId;
+  final String asalKampus; 
 
-  const SearchPage({super.key, required this.userName, required this.userId});
+  const SearchPage({
+    super.key, 
+    required this.userName, 
+    required this.userId,
+    this.asalKampus = "", 
+  });
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -154,7 +160,11 @@ class _SearchPageState extends State<SearchPage> {
         child: Column(
           children: [
             // AppBar
-            AppBarUser(userName: widget.userName),
+            AppBarUser(
+              userName: widget.userName,
+              userId: widget.userId, // Tambahkan userId
+              asalKampus: widget.asalKampus, // Tambahkan asalKampus
+            ),
 
             // Search input
             Padding(
@@ -255,6 +265,7 @@ class _SearchPageState extends State<SearchPage> {
         currentIndex: 2,
         userName: widget.userName,
         userId: widget.userId,
+        asalKampus: widget.asalKampus, // Tambahkan asalKampus
       ),
     );
   }

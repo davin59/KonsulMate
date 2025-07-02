@@ -5,8 +5,14 @@ import '../widgets/footer_user.dart';
 class ListChatUser extends StatelessWidget {
   final String userName;
   final String userId;
+  final String asalKampus; // Tambahkan parameter asalKampus
 
-  const ListChatUser({super.key, required this.userName, required this.userId});
+  const ListChatUser({
+    super.key, 
+    required this.userName, 
+    required this.userId,
+    this.asalKampus = "", // Default value kosong
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +22,11 @@ class ListChatUser extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            AppBarUser(userName: userName),
+            AppBarUser(
+              userName: userName,
+              userId: userId, // Tambahkan userId
+              asalKampus: asalKampus, // Tambahkan asalKampus
+            ),
             const SizedBox(height: 24),
             const Center(
               child: Text(
@@ -32,6 +42,7 @@ class ListChatUser extends StatelessWidget {
         currentIndex: 1, // Index 1 untuk halaman chat
         userName: userName,
         userId: userId,
+        asalKampus: asalKampus, // Tambahkan asalKampus
       ),
     );
   }

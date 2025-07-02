@@ -10,12 +10,14 @@ class FooterUser extends StatelessWidget {
   final int currentIndex;
   final String userName;
   final String userId;
+  final String asalKampus;
 
   const FooterUser({
     super.key,
     required this.currentIndex,
     required this.userName,
     required this.userId,
+    this.asalKampus = "",
   });
 
   void _onItemTapped(BuildContext context, int index) {
