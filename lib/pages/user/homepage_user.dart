@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../widgets/appbar_user.dart';
 import '../widgets/footer_user.dart';
 import '../widgets/mentor_section.dart';
+import 'mentor_detail_page.dart';
 
 class HomeUser extends StatefulWidget {
   final String userName;
@@ -26,6 +27,21 @@ class _UserHomePageState extends State<HomeUser> {
     super.initState();
   }
 
+  // Tambahkan metode navigasi
+  void _navigateToMentorDetail(String mentorId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MentorDetailPage(
+          mentorId: mentorId,
+          userId: widget.userId,
+          userName: widget.userName,
+          asalKampus: widget.asalKampus,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,28 +55,31 @@ class _UserHomePageState extends State<HomeUser> {
           ),
           const SizedBox(height: 24),
           
-          // Top Mentors
-          const MentorSection(
+          // Top Mentors - hapus const
+          MentorSection(
             title: 'Top Mentor',
-            // Tanpa kategori mengambil semua mentor
+            onMentorTap: _navigateToMentorDetail,
           ),
           
-          // Raja Matematika
-          const FilteredMentorSection(
+          // Raja Matematika - hapus const
+          FilteredMentorSection(
             title: 'Raja Matematika',
             keywords: ['matematika', 'kalkulus', 'statistik'],
+            onMentorTap: _navigateToMentorDetail,
           ),
           
-          // Jago Ngoding
-          const FilteredMentorSection(
+          // Jago Ngoding - hapus const
+          FilteredMentorSection(
             title: 'Jago Ngoding',
             keywords: ['programming', 'web', 'android', 'informatika'],
+            onMentorTap: _navigateToMentorDetail,
           ),
           
-          // Pebisnis
-          const FilteredMentorSection(
+          // Pebisnis - hapus const
+          FilteredMentorSection(
             title: 'Pebisnis',
             keywords: ['bisnis', 'manajemen', 'wirausaha'],
+            onMentorTap: _navigateToMentorDetail,
           ),
         ],
       ),

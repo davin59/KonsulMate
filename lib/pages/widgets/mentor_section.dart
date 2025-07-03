@@ -93,11 +93,13 @@ class MentorCard extends StatelessWidget {
 class MentorSection extends StatelessWidget {
   final String title;
   final String? kategori;
+  final Function(String mentorId)? onMentorTap;  // Tambahkan ini
   
   const MentorSection({
     super.key,
     required this.title,
     this.kategori,
+    this.onMentorTap,  // Tambahkan ini
   });
   
   @override
@@ -164,7 +166,14 @@ class MentorSection extends StatelessWidget {
               final mentor = docs[index].data() as Map<String, dynamic>;
               // Tambahkan ID document ke map untuk referensi
               mentor['id'] = docs[index].id;
-              return MentorCard(mentor: mentor);
+              return MentorCard(
+                mentor: mentor,
+                onTap: () {
+                  if (onMentorTap != null) {
+                    onMentorTap!(mentor['id']);
+                  }
+                },
+              );
             },
           );
         },
@@ -177,11 +186,13 @@ class MentorSection extends StatelessWidget {
 class FilteredMentorSection extends StatelessWidget {
   final String title;
   final List<String> keywords;
+  final Function(String mentorId)? onMentorTap;  // Tambahkan ini
   
   const FilteredMentorSection({
     super.key,
     required this.title,
     required this.keywords,
+    this.onMentorTap,  // Tambahkan ini
   });
   
   @override
@@ -250,7 +261,14 @@ class FilteredMentorSection extends StatelessWidget {
             itemBuilder: (context, index) {
               final mentor = filteredMentors[index].data() as Map<String, dynamic>;
               mentor['id'] = filteredMentors[index].id;
-              return MentorCard(mentor: mentor);
+              return MentorCard(
+                mentor: mentor,
+                onTap: () {
+                  if (onMentorTap != null) {
+                    onMentorTap!(mentor['id']);
+                  }
+                },
+              );
             },
           );
         },
