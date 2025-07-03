@@ -69,21 +69,32 @@ class _UserHistoryPageState extends State<HistoryUser> {
           padding: EdgeInsets.zero,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              height: 120,
               decoration: const BoxDecoration(
-                color: Color(0xFF80C9FF),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF80C9FF), // Biru di atas
+                    Colors.white,      // Putih di bawah
+                  ],
+                ),
                 borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
+                  bottomLeft: Radius.circular(28),
+                  bottomRight: Radius.circular(28),
                 ),
               ),
-              child: const Center(
-                child: Text(
-                  'History Konsultasi',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              child: const Padding(
+                padding: EdgeInsets.only(left: 24.0, top: 40.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'History Konsultasi',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),

@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import '../user/homepage_user.dart';
 import '../user/listchat_user.dart';
-import '../user/search_page.dart';
 import '../user/history_user.dart';
 
 class FooterUser extends StatelessWidget {
@@ -29,9 +28,6 @@ class FooterUser extends StatelessWidget {
         break;
       case 1:
         page = ListChatUser(userName: userName, userId: userId);
-        break;
-      case 2:
-        page = SearchPage(userName: userName, userId: userId);
         break;
       case 3:
         page = HistoryUser(userName: userName, userId: userId);
@@ -69,7 +65,6 @@ class FooterUser extends StatelessWidget {
             Icons.chat_bubble_outline,
             iconSize: 22,
           ), // icon chat lebih kecil
-          _buildNavItem(context, 2, Icons.search),
           _buildNavItem(context, 3, Icons.history),
         ],
       ),
