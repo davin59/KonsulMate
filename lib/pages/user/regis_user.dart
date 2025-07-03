@@ -223,17 +223,22 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
             'role': 'user', // Tambahkan field role
           });
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Registrasi berhasil!')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Registrasi berhasil!')));
+      }
+      
       await Future.delayed(const Duration(seconds: 1));
       if (mounted) {
         Navigator.of(context).pop();
       }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Maaf kamu gagal mendaftar')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message ?? 'Maaf kamu gagal mendaftar')),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
