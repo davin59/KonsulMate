@@ -62,58 +62,47 @@ class _UserHomePageState extends State<HomeUser> {
 
   @override
   Widget build(BuildContext context) {
-    final rajaMtk = filterAndSortMentor([
-      'matematika',
-      'aljabar',
-      'kalkulus',
-      'statistik',
-      'logika',
-    ]);
-    final jagoNgoding = filterAndSortMentor([
-      'programming',
-      'web',
-      'android',
-      'informatika',
-      'developer',
-      'coding',
-    ]);
-    final pebisnis = filterAndSortMentor([
-      'bisnis',
-      'manajemen',
-      'wirausaha',
-      'startup',
-      'umkm',
-      'marketing',
-    ]);
-    final topMentor = getTopMentor();
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
-      body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            AppBarUser(
-              userName: widget.userName,
-              asalKampus: widget.asalKampus,
-              userId: widget.userId, // Tambahkan userId untuk Firestore
-            ),
-            const SizedBox(height: 24),
-            MentorSection(
-              title: 'Top Mentor',
-              mentorList: topMentor != null ? [topMentor] : [],
-            ),
-            MentorSection(title: 'Raja Matematika', mentorList: rajaMtk),
-            MentorSection(title: 'Jago Ngoding', mentorList: jagoNgoding),
-            MentorSection(title: 'Pebisnis', mentorList: pebisnis),
-          ],
-        ),
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          AppBarUser(
+            userName: widget.userName,
+            userId: widget.userId,
+            asalKampus: widget.asalKampus,
+          ),
+          const SizedBox(height: 24),
+          
+          // Top Mentors
+          const MentorSection(
+            title: 'Top Mentor',
+            // Tanpa kategori mengambil semua mentor
+          ),
+          
+          // Raja Matematika
+          const FilteredMentorSection(
+            title: 'Raja Matematika',
+            keywords: ['matematika', 'kalkulus', 'statistik'],
+          ),
+          
+          // Jago Ngoding
+          const FilteredMentorSection(
+            title: 'Jago Ngoding',
+            keywords: ['programming', 'web', 'android', 'informatika'],
+          ),
+          
+          // Pebisnis
+          const FilteredMentorSection(
+            title: 'Pebisnis',
+            keywords: ['bisnis', 'manajemen', 'wirausaha'],
+          ),
+        ],
       ),
       bottomNavigationBar: FooterUser(
         currentIndex: 0,
         userName: widget.userName,
-        userId: widget.userId,
-        asalKampus: widget.asalKampus, 
+        userId: widget.userId, 
+        asalKampus: widget.asalKampus,
       ),
     );
   }
