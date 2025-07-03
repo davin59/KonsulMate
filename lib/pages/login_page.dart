@@ -10,6 +10,7 @@ import 'mentor/regis_mentor.dart'; // Tambahkan import ini
 import 'user/regis_user.dart'; // Tambahkan import ini
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'admin/dashboard_admin.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -122,6 +123,22 @@ class _LoginPageState extends State<LoginPage> {
                   userName: mentorDoc['nama_lengkap'] ?? '',
                   userId: uid,
                 ),
+          ),
+        );
+        return;
+      }
+
+            // Cek di koleksi 'admin'
+      DocumentSnapshot adminDoc =
+          await FirebaseFirestore.instance.collection('admin').doc(uid).get();
+      if (adminDoc.exists) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardAdmin(
+              adminName: adminDoc['nama'] ?? 'Admin',
+              adminId: uid,
+            ),
           ),
         );
         return;
