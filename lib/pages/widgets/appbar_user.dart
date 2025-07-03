@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../user/profilepage_user.dart';
+import '../user/search_page.dart';
 
 class AppBarUser extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
@@ -37,59 +38,108 @@ class AppBarUser extends StatelessWidget implements PreferredSizeWidget {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context, String kampus) {
-    return AppBar(
-      backgroundColor: const Color(0xFF80C9FF),
-      elevation: 0,
-      toolbarHeight: 80,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            userName,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(160), // Lebih tinggi
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF80C9FF), // Biru di atas
+              Colors.white,      // Putih di bawah
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            kampus,
-            style: const TextStyle(color: Colors.white70, fontSize: 16),
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(28),
+            bottomRight: Radius.circular(28),
           ),
-        ],
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16.0),
-          child: GestureDetector(
-            onTap: () {
-              if (userId != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UserProfilePage(
-                      userName: userName,
-                      userId: userId!,
-                      asalKampus: kampus,
-                    ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32), // Tambah padding vertikal
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Profile photo
+                GestureDetector(
+                  onTap: () {
+                    if (userId != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserProfilePage(
+                            userName: userName,
+                            userId: userId!,
+                            asalKampus: kampus,
+                          ),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('User ID tidak tersedia')),
+                      );
+                    }
+                  },
+                  child: const CircleAvatar(
+                    radius: 28,
+                    backgroundImage: AssetImage('assets/mentor_avatar.png'),
+                    backgroundColor: Colors.grey,
                   ),
-                );
-              } else {
-                // Tampilkan pesan jika userId null
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('User ID tidak tersedia')),
-                );
-              }
-            },
-            child: const CircleAvatar(
-              radius: 20,
-              backgroundImage: AssetImage('assets/mentor_avatar.png'),
-              backgroundColor: Colors.grey,
+                ),
+                const SizedBox(width: 16),
+                // Name and campus (centered)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        userName,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        kampus,
+                        style: const TextStyle(
+                          color: Colors.black54,
+                          fontSize: 14,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                // Search icon
+                IconButton(
+                  icon: const Icon(Icons.search, color: Colors.black, size: 28),
+                  onPressed: () {
+                    if (userId != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SearchPage(userName: userName, userId: userId!),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('User ID tidak tersedia')),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
