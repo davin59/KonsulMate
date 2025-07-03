@@ -64,12 +64,23 @@ class AppBarUser extends StatelessWidget implements PreferredSizeWidget {
           padding: const EdgeInsets.only(right: 16.0),
           child: GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const UserProfilePage(),
-                ),
-              );
+              if (userId != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserProfilePage(
+                      userName: userName,
+                      userId: userId!,
+                      asalKampus: kampus,
+                    ),
+                  ),
+                );
+              } else {
+                // Tampilkan pesan jika userId null
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('User ID tidak tersedia')),
+                );
+              }
             },
             child: const CircleAvatar(
               radius: 20,
