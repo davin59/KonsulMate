@@ -1,8 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
 import '../widgets/appbar_user.dart';
 import '../widgets/footer_user.dart';
 import '../widgets/mentor_section.dart';
@@ -23,41 +21,9 @@ class HomeUser extends StatefulWidget {
 }
 
 class _UserHomePageState extends State<HomeUser> {
-  List<dynamic> mentors = [];
-
   @override
   void initState() {
     super.initState();
-    loadMentors();
-  }
-
-  Future<void> loadMentors() async {
-    String data = await rootBundle.loadString('assets/data/dummy.json');
-    final jsonData = json.decode(data);
-    setState(() {
-      mentors = jsonData['mentor'];
-    });
-  }
-
-  List<dynamic> filterAndSortMentor(List<String> keywords) {
-    final filtered =
-        mentors.where((m) {
-          final keahlian = (m['keahlian'] ?? '').toString().toLowerCase();
-          final prodi = (m['prodi'] ?? '').toString().toLowerCase();
-          return keywords.any((k) => keahlian.contains(k) || prodi.contains(k));
-        }).toList();
-    filtered.sort(
-      (a, b) => (b['rateing'] as num).compareTo(a['rateing'] as num),
-    );
-    return filtered;
-  }
-
-  dynamic getTopMentor() {
-    if (mentors.isEmpty) return null;
-    mentors.sort(
-      (a, b) => (b['rateing'] as num).compareTo(a['rateing'] as num),
-    );
-    return mentors.first;
   }
 
   @override
