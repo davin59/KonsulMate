@@ -4,7 +4,7 @@ import '../widgets/appbar_user.dart';
 import '../widgets/footer_user.dart';
 import '../widgets/mentor_section.dart';
 import '../widgets/search_bar.dart';
-
+import 'mentor_detail_page.dart'; 
 class SearchPage extends StatefulWidget {
   final String userName;
   final String userId;
@@ -242,6 +242,17 @@ class _SearchPageState extends State<SearchPage> {
                       mentor: filteredMentors[index],
                       onTap: () {
                         // Navigate to mentor detail page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MentorDetailPage(
+                              mentorId: filteredMentors[index]['id'],
+                              userId: widget.userId,
+                              userName: widget.userName,
+                              asalKampus: widget.asalKampus,
+                            ),
+                          ),
+                        );
                       },
                     );
                   },
