@@ -117,15 +117,15 @@ class _MentorDetailPageState extends State<MentorDetailPage> {
           : SingleChildScrollView(
               child: MentorDetailCard(
                 mentorName: mentorData['nama_lengkap'] ?? 'Nama Mentor',
-                mentorImageUrl: '', // Gunakan circle avatar untuk foto profil
+                mentorImageUrl: '', 
                 expertise: mentorData['prodi'] ?? 'Tidak ada data',
                 pricePerHour: pricePerMeet, // Dari detail_pesanan
                 skills: mentorData['keahlian']?.toString().split(', ') ?? [],
-                technologies: mentorData['tools']?.toString().split(', ') ?? [], // Gunakan tools, bukan teknologi
+                technologies: mentorData['tools']?.toString().split(', ') ?? [], 
                 university: mentorData['asal_kampus'] ?? 'Tidak ada data',
                 rating: mentorRating, // Dihitung dari collection pesanan
                 orderCount: orderCount, // Dihitung dari jumlah dokumen
-                about: mentorData['deskripsi'] ?? 'Tidak ada deskripsi', // Gunakan deskripsi, bukan tentang
+                about: mentorData['deskripsi'] ?? 'Tidak ada deskripsi', 
               ),
             ),
       bottomNavigationBar: FooterUser(

@@ -88,6 +88,7 @@ class MentorDetailCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: Colors.blue
                   ),
                 ),
               ),
@@ -154,7 +155,7 @@ class MentorDetailCard extends StatelessWidget {
                       text: TextSpan(
                         style: const TextStyle(
                           fontSize: 16,
-                          color: Colors.black,
+                          color: Color.fromARGB(255, 255, 255, 255),
                         ),
                         children: [
                           const TextSpan(text: 'Rp. '),
@@ -164,7 +165,7 @@ class MentorDetailCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const TextSpan(text: '/ jam'),
+                          const TextSpan(text: '/ meets'),
                         ],
                       ),
                     ),
@@ -195,7 +196,7 @@ class MentorDetailCard extends StatelessWidget {
                             Text(
                               rating.toString(),
                               style: const TextStyle(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.bold, color: Colors.white
                               ),
                             ),
                           ],
@@ -203,7 +204,7 @@ class MentorDetailCard extends StatelessWidget {
                         const Spacer(),
                         Text(
                           'Order: $orderCount',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                       ],
                     ),
