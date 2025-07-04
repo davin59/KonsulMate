@@ -31,6 +31,7 @@ flutter:
     - assets/images/illustration.png
     - assets/data/dummy.json
     - assets/icons/
+    - assets/images/qris.png
 
   fonts:
     - family: chewy

@@ -329,47 +329,194 @@ class _UserHistoryPageState extends State<HistoryUser> {
 
   // Widget untuk tombol aksi berdasarkan status
   Widget _buildActionButtons(Map<String, dynamic> order, String status) {
+    // Ambil detail pesanan untuk akses catatan
+    final detail = order['detail_pesanan'] ?? {};
+    final persetujuanMentor = detail['persetujuan_mentor'] ?? {};
+    final verifikasiAdmin = detail['verifikasi_admin'] ?? {};
+    
+    // Catatan dari mentor (jika ada)
+    final String? catatanMentor = persetujuanMentor['catatan'];
+    // Catatan dari admin (jika ada)
+    final String? catatanAdmin = verifikasiAdmin['catatan'];
+
     switch (status) {
       case 'menunggu_pembayaran':
         // Tombol Upload Bukti Pembayaran setelah disetujui mentor
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ElevatedButton.icon(
-              onPressed: () {
-                // Navigasi ke halaman pembayaran
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PaymentPage(
-                      orderId: order['id'],
-                      totalAmount: order['total_harga'] ?? 0,
-                      // Tambahkan parameter lain yang dibutuhkan
+            // Tampilkan catatan mentor jika ada
+            if (catatanMentor != null && catatanMentor.toString().isNotEmpty) ...[
+              Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade100),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Catatan dari Mentor:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.blue,
+                      ),
                     ),
-                  ),
-                ).then((_) => loadUserOrders());
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                    const SizedBox(height: 4),
+                    Text(
+                      catatanMentor,
+                      style: TextStyle(fontSize: 13, color: Colors.blue.shade800),
+                    ),
+                  ],
                 ),
               ),
-              icon: const Icon(Icons.upload_file, size: 18),
-              label: const Text('Upload Bukti Pembayaran'),
+            ],
+            
+            // Tombol pembayaran
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Navigasi ke halaman pembayaran
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PaymentPage(
+                          orderId: order['id'],
+                          totalAmount: order['total_harga'] ?? 0,
+                        ),
+                      ),
+                    ).then((_) => loadUserOrders());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  icon: const Icon(Icons.upload_file, size: 18),
+                  label: const Text('Upload Bukti Pembayaran'),
+                ),
+              ],
             ),
+          ],
+        );
+    
+      case 'menunggu_verifikasi_admin':
+        // Status menunggu verifikasi admin dengan info bukti pembayaran
+        final buktiUrl = detail['bukti_pembayaran']?['url'];
+        final tanggalBayar = detail['bukti_pembayaran']?['tanggal'];
+        
+        String tanggalPembayaran = '';
+        if (tanggalBayar != null && tanggalBayar is Timestamp) {
+          final date = tanggalBayar.toDate();
+          tanggalPembayaran = '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}';
+        }
+        
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.purple.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.purple.shade100),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Bukti Pembayaran:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        tanggalPembayaran,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Pembayaran sedang diverifikasi oleh admin',
+                    style: TextStyle(fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            
+            if (buktiUrl != null && buktiUrl.toString().isNotEmpty) 
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                height: 150,
+                width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    buktiUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => 
+                      const Center(child: Text('Tidak dapat menampilkan bukti')),
+                  ),
+                ),
+              ),
           ],
         );
     
       case 'terkonfirmasi':
         // Tampilkan detail lokasi pertemuan dan tombol Selesai
-        final detail = order['detail_pesanan'] ?? {};
         final alamat = detail['alamat_meets'] ?? 'Lokasi tidak tersedia';
         
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Catatan dari admin (jika ada)
+            if (catatanAdmin != null && catatanAdmin.toString().isNotEmpty) ...[
+              Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.teal.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.teal.shade100),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Catatan dari Admin:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.teal,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      catatanAdmin,
+                      style: TextStyle(fontSize: 13, color: Colors.teal.shade800),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
+            // Informasi lokasi
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -389,7 +536,10 @@ class _UserHistoryPageState extends State<HistoryUser> {
                 ],
               ),
             ),
+            
             const SizedBox(height: 12),
+            
+            // Tombol Tandai Selesai
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -411,6 +561,7 @@ class _UserHistoryPageState extends State<HistoryUser> {
         );
     
       case 'selesai':
+        // Kode untuk status selesai sama seperti sebelumnya
         // Cek apakah sudah dirating
         final bool alreadyRated = order['rating'] != null;
         
@@ -471,23 +622,59 @@ class _UserHistoryPageState extends State<HistoryUser> {
             );
     
       case 'dibatalkan':
-        return Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 6,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.red.shade100,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Text(
-            'Pesanan dibatalkan',
-            style: TextStyle(
-              color: Colors.red,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.red.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                'Pesanan dibatalkan',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
             ),
-          ),
+            
+            // Tampilkan catatan mentor jika pesanan ditolak
+            if (catatanMentor != null && catatanMentor.toString().isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade100),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Alasan Penolakan:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.red,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      catatanMentor,
+                      style: TextStyle(fontSize: 13, color: Colors.red.shade800),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
         );
         
       default:
