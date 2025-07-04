@@ -125,7 +125,7 @@ class MentorDetailCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: const BoxDecoration(
-                  color: const Color(0xFF87CEEB),
+                  color: Color(0xFF87CEEB),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(12),
                     topRight: Radius.circular(12),

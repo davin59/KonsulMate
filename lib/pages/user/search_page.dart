@@ -7,14 +7,16 @@ import '../widgets/mentor_section.dart';
 class SearchPage extends StatefulWidget {
   final String userName;
   final String userId;
-  final String asalKampus; 
+  final String asalKampus;
+  final bool showFilters; // Tambahkan parameter ini
 
   const SearchPage({
-    super.key, 
-    required this.userName, 
+    Key? key,
+    required this.userName,
     required this.userId,
-    this.asalKampus = "", 
-  });
+    this.asalKampus = "",
+    this.showFilters = false, // Parameter baru
+  }) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -50,6 +52,10 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
+    // Set showAllFilters berdasarkan parameter
+    if (widget.showFilters) {
+      showAllFilters = true;
+    }
     loadMentorsFromFirebase();
   }
 
@@ -57,21 +63,21 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       isLoading = true;
     });
-    
+
     try {
       // Base query dari Firebase
       Query mentorsQuery = FirebaseFirestore.instance.collection('mentors');
-      
+
       // Ambil semua data untuk client-side filtering
       final QuerySnapshot snapshot = await mentorsQuery.get();
-      
+
       // Konversi snapshot ke list of maps
       List<Map<String, dynamic>> mentorList = snapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         data['id'] = doc.id; // Tambahkan document ID ke data
         return data;
       }).toList();
-      
+
       // Filter berdasarkan pencarian teks jika ada
       if (searchQuery.isNotEmpty) {
         final lowercaseQuery = searchQuery.toLowerCase();
@@ -80,19 +86,19 @@ class _SearchPageState extends State<SearchPage> {
           final expertise = mentor['keahlian']?.toString().toLowerCase() ?? '';
           final campus = mentor['asal_kampus']?.toString().toLowerCase() ?? '';
           final prodi = mentor['prodi']?.toString().toLowerCase() ?? '';
-          
+
           return name.contains(lowercaseQuery) ||
               expertise.contains(lowercaseQuery) ||
               campus.contains(lowercaseQuery) ||
               prodi.contains(lowercaseQuery);
         }).toList();
       }
-      
+
       // Filter berdasarkan kategori yang dipilih
       if (activeFilter != 'Semua') {
         mentorList = filterByCategory(mentorList, activeFilter);
       }
-      
+
       setState(() {
         filteredMentors = mentorList;
         isLoading = false;

@@ -5,6 +5,7 @@ import '../widgets/appbar_user.dart';
 import '../widgets/footer_user.dart';
 import '../widgets/mentor_section.dart';
 import 'mentor_detail_page.dart';
+import '../widgets/search_bar.dart';
 
 class HomeUser extends StatefulWidget {
   final String userName;
@@ -46,16 +47,23 @@ class _UserHomePageState extends State<HomeUser> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
-        padding: EdgeInsets.zero,
         children: [
           AppBarUser(
             userName: widget.userName,
             userId: widget.userId,
             asalKampus: widget.asalKampus,
           ),
-          const SizedBox(height: 24),
           
-          // Top Mentors - hapus const
+          // Tambahkan SearchBar di sini
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+            child: CustomSearchBar(
+              userName: widget.userName,
+              userId: widget.userId,
+            ),
+          ),
+          
+          // Top Mentors
           MentorSection(
             title: 'Top Mentor',
             onMentorTap: _navigateToMentorDetail,
