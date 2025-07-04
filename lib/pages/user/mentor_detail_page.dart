@@ -24,37 +24,81 @@ class MentorDetailPage extends StatefulWidget {
 }
 
 class _MentorDetailPageState extends State<MentorDetailPage> {
+  // Tambahkan variabel state untuk menyimpan data tambahan
   bool isLoading = true;
   Map<String, dynamic> mentorData = {};
+  double mentorRating = 0.0;
+  int orderCount = 0;
+  int pricePerMeet = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadMentorData();
+    _loadAllMentorData();
   }
 
-  Future<void> _loadMentorData() async {
+  Future<void> _loadAllMentorData() async {
     setState(() {
       isLoading = true;
     });
 
     try {
+      // 1. Load data mentor dasar
       DocumentSnapshot mentorDoc = await FirebaseFirestore.instance
           .collection('mentors')
           .doc(widget.mentorId)
           .get();
 
-      if (mentorDoc.exists) {
-        setState(() {
-          mentorData = mentorDoc.data() as Map<String, dynamic>;
-          isLoading = false;
-        });
-      } else {
+      if (!mentorDoc.exists) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Mentor tidak ditemukan')),
         );
         Navigator.pop(context);
+        return;
       }
+
+      mentorData = mentorDoc.data() as Map<String, dynamic>;
+
+      // 2. Hitung jumlah pesanan untuk mentor ini
+      QuerySnapshot pesananSnapshot = await FirebaseFirestore.instance
+          .collection('pesanan')
+          .where('id_mentor', isEqualTo: widget.mentorId)
+          .get();
+      
+      orderCount = pesananSnapshot.docs.length;
+
+      // 3. Hitung rating rata-rata
+      double totalRating = 0;
+      int ratingCount = 0;
+      
+      for (var doc in pesananSnapshot.docs) {
+        var data = doc.data() as Map<String, dynamic>;
+        if (data['rating'] != null) {
+          totalRating += (data['rating'] as num).toDouble();
+          ratingCount++;
+        }
+      }
+      
+      if (ratingCount > 0) {
+        mentorRating = totalRating / ratingCount;
+      }
+
+      // 4. Ambil harga per meet dari detail_pesanan (ambil yang terbaru)
+      QuerySnapshot detailPesananSnapshot = await FirebaseFirestore.instance
+          .collection('detail_pesanan')
+          .where('id_mentor', isEqualTo: widget.mentorId)
+          .orderBy('updated_at', descending: true)
+          .limit(1)
+          .get();
+
+      if (detailPesananSnapshot.docs.isNotEmpty) {
+        var detailData = detailPesananSnapshot.docs.first.data() as Map<String, dynamic>;
+        pricePerMeet = detailData['harga_per_meet'] ?? 0;
+      }
+
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
@@ -73,15 +117,15 @@ class _MentorDetailPageState extends State<MentorDetailPage> {
           : SingleChildScrollView(
               child: MentorDetailCard(
                 mentorName: mentorData['nama_lengkap'] ?? 'Nama Mentor',
-                mentorImageUrl: mentorData['foto_profil'] ?? '',
+                mentorImageUrl: '', // Gunakan circle avatar untuk foto profil
                 expertise: mentorData['prodi'] ?? 'Tidak ada data',
-                pricePerHour: mentorData['tarif_per_jam'] ?? 0,
-                skills: List<String>.from(mentorData['keahlian']?.split(',') ?? []),
-                technologies: List<String>.from(mentorData['teknologi']?.split(',') ?? []),
+                pricePerHour: pricePerMeet, // Dari detail_pesanan
+                skills: mentorData['keahlian']?.toString().split(', ') ?? [],
+                technologies: mentorData['tools']?.toString().split(', ') ?? [], // Gunakan tools, bukan teknologi
                 university: mentorData['asal_kampus'] ?? 'Tidak ada data',
-                rating: (mentorData['rating'] ?? 0).toDouble(),
-                orderCount: mentorData['jumlah_order'] ?? 0,
-                about: mentorData['tentang'] ?? 'Tidak ada deskripsi',
+                rating: mentorRating, // Dihitung dari collection pesanan
+                orderCount: orderCount, // Dihitung dari jumlah dokumen
+                about: mentorData['deskripsi'] ?? 'Tidak ada deskripsi', // Gunakan deskripsi, bukan tentang
               ),
             ),
       bottomNavigationBar: FooterUser(
