@@ -3,20 +3,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/appbar_user.dart';
 import '../widgets/footer_user.dart';
 import '../widgets/mentor_section.dart';
+import '../widgets/search_bar.dart';
 
 class SearchPage extends StatefulWidget {
   final String userName;
   final String userId;
   final String asalKampus;
-  final bool showFilters; // Tambahkan parameter ini
+  final bool showFilters;
 
-  const SearchPage({
-    Key? key,
-    required this.userName,
-    required this.userId,
-    this.asalKampus = "",
-    this.showFilters = false, // Parameter baru
-  }) : super(key: key);
+// Ubah constructor SearchPage
+
+const SearchPage({
+  super.key,  
+  required this.userName,
+  required this.userId,
+  this.asalKampus = "",
+  this.showFilters = false,
+});
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -175,53 +178,25 @@ class _SearchPageState extends State<SearchPage> {
               asalKampus: widget.asalKampus,
             ),
 
-            // Search input
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: TextField(
-                        controller: searchController,
-                        decoration: const InputDecoration(
-                          hintText: 'Cari mentor...',
-                          prefixIcon: Icon(Icons.search),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(vertical: 12),
-                        ),
-                        onChanged: (value) {
-                          // Delay pencarian untuk mengurangi query yang terlalu sering
-                          Future.delayed(const Duration(milliseconds: 500), () {
-                            if (value == searchController.text) {
-                              applyFilters();
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: Icon(
-                      showAllFilters
-                          ? Icons.filter_list_off
-                          : Icons.filter_list,
-                      color: Colors.blue[700],
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        showAllFilters = !showAllFilters;
-                      });
-                    },
-                  ),
-                ],
-              ),
+            // Ganti search input dengan CustomSearchBar
+            CustomSearchBar(
+              userName: widget.userName,
+              userId: widget.userId,
+              controller: searchController,
+              isOnSearchPage: true,
+              onSearchChanged: (value) {
+                // Delay pencarian untuk mengurangi query yang terlalu sering
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  if (value == searchController.text) {
+                    applyFilters();
+                  }
+                });
+              },
+              onFilterTap: () {
+                setState(() {
+                  showAllFilters = !showAllFilters;
+                });
+              },
             ),
 
             // Filter chips
