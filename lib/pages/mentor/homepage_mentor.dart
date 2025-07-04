@@ -1,148 +1,115 @@
 import 'package:flutter/material.dart';
-import 'components/appbar_mentor.dart';
-import 'components/footer_mentor.dart';
+// Ubah import ke widget baru
+import '../widgets/appbar_mentor.dart';
+import '../widgets/footer_mentor.dart';
 
-void main() {
-  runApp(const HomepageMentor(userName: 'John Doe', userId: '12345'));
-}
+// Hapus main function yang tidak perlu lagi
+// void main() {
+//   runApp(const HomepageMentor(userName: 'John Doe', userId: '12345'));
+// }
 
 class HomepageMentor extends StatelessWidget {
   final String userName;
   final String userId;
+  final String? bidangKeahlian; // Tambahkan parameter ini
 
   const HomepageMentor({
     super.key,
     required this.userName,
     required this.userId,
+    this.bidangKeahlian,
   });
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Mentor App UI',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MentorHomePage(userName: userName, userId: userId),
+    // Jangan gunakan MaterialApp di sini karena ini adalah halaman, bukan aplikasi
+    return MentorHomePage(
+      userName: userName,
+      userId: userId,
+      bidangKeahlian: bidangKeahlian,
     );
   }
 }
 
-// Define the MentorProfilePage
-class MentorProfilePage extends StatelessWidget {
-  const MentorProfilePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mentor Profile'),
-        backgroundColor: Colors.blue.shade600,
-        foregroundColor: Colors.white,
-      ),
-      body: const Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 60,
-                backgroundImage: AssetImage('assets/mentor_avatar.png'),
-                backgroundColor: Colors.grey,
-              ),
-              SizedBox(height: 20),
-              Text(
-                'Nama Mentor',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueGrey,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Asal Kampus',
-                style: TextStyle(fontSize: 20, color: Colors.grey),
-              ),
-              SizedBox(height: 30),
-              Text(
-                'Detail informasi tentang mentor akan ditampilkan di sini. '
-                'Ini bisa mencakup keahlian, pengalaman, dan kontak.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.black87),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+// Bagian MentorProfilePage tidak dibutuhkan lagi karena sudah ada profilepage_mentor.dart
+// class MentorProfilePage extends StatelessWidget {
+//   ...
+// }
 
 class MentorHomePage extends StatelessWidget {
   final String userName;
   final String userId;
+  final String? bidangKeahlian; // Tambahkan parameter ini
 
   // Simulate whether there are any orders
-  final bool hasOrders =
-      false; // Set to true to show the card, false to show the image
+  final bool hasOrders = false;
 
   const MentorHomePage({
     super.key,
     required this.userName,
     required this.userId,
-    // this.hasOrders = true, // You might get this from a real data source
+    this.bidangKeahlian,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MentorAppBar(),
-      body:
-          hasOrders
-              ? SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildClientCard(context),
-                      // You can add more client cards or other content here
-                    ],
-                  ),
-                ),
-              )
-              : Center(
-                child: SizedBox.expand(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/icons/bingung.png',
-                        width: 200,
-                        height: 200,
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Belum ada pesanan yang masuk',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
-                      ),
-                    ],
-                  ),
+      // Gunakan AppBarMentor baru
+      appBar: AppBarMentor(
+        userName: userName,
+        userId: userId,
+        bidangKeahlian: bidangKeahlian,
+      ),
+      body: hasOrders
+          ? SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildClientCard(context),
+                    // You can add more client cards or other content here
+                  ],
                 ),
               ),
+            )
+          : Center(
+              child: SizedBox.expand(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/icons/bingung.png',
+                      width: 200,
+                      height: 200,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.image_not_supported,
+                        size: 200,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Belum ada pesanan yang masuk',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+      // Gunakan FooterMentor baru
       bottomNavigationBar: FooterMentor(
         currentIndex: 0,
         userName: userName,
         userId: userId,
+        bidangKeahlian: bidangKeahlian,
       ),
     );
   }
 
+  // Widget _buildClientCard tetap sama
   Widget _buildClientCard(BuildContext context) {
+    // Kode yang sudah ada...
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -153,10 +120,10 @@ class MentorHomePage extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 35,
-                  backgroundImage: const AssetImage('assets/client_avatar.png'),
                   backgroundColor: Colors.blueGrey,
+                  child: Icon(Icons.person, size: 40, color: Colors.white),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -182,7 +149,7 @@ class MentorHomePage extends StatelessWidget {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Lokasi yang user pesahn',
+                        'Lokasi yang user pesan',
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                     ],
