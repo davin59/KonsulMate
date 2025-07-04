@@ -12,6 +12,7 @@ class MentorDetailCard extends StatelessWidget {
   final double rating;
   final int orderCount;
   final String about;
+  final VoidCallback? onTentukanWaktuPressed; // Tambahkan parameter ini
 
   const MentorDetailCard({
     super.key,
@@ -25,6 +26,7 @@ class MentorDetailCard extends StatelessWidget {
     required this.rating,
     required this.orderCount,
     required this.about,
+    this.onTentukanWaktuPressed, // Tambahkan parameter ini
   });
 
   @override
@@ -93,9 +95,7 @@ class MentorDetailCard extends StatelessWidget {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {
-                  // Implementasi fungsi tentukan waktu
-                },
+                onPressed: onTentukanWaktuPressed, // Gunakan callback
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(

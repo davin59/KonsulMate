@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/mentor_card.dart';
 import '../widgets/footer_user.dart';
+import 'order_page.dart';
 
 class MentorDetailPage extends StatefulWidget {
   final String mentorId;
@@ -109,6 +110,25 @@ class _MentorDetailPageState extends State<MentorDetailPage> {
     }
   }
 
+  void _navigateToOrderPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OrderPage(
+          userId: widget.userId,
+          userName: widget.userName,
+          asalKampus: widget.asalKampus,
+          mentorId: widget.mentorId,
+          mentorName: mentorData['nama_lengkap'] ?? 'Nama Mentor',
+          mentorProdi: mentorData['prodi'] ?? '',
+          mentorKeahlian: mentorData['keahlian'] ?? '',
+          hargaPerMeet: pricePerMeet, // Gunakan nilai yang sudah dihitung
+          mentorImageUrl: '', // Gunakan string kosong atau URL jika tersedia
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,15 +137,16 @@ class _MentorDetailPageState extends State<MentorDetailPage> {
           : SingleChildScrollView(
               child: MentorDetailCard(
                 mentorName: mentorData['nama_lengkap'] ?? 'Nama Mentor',
-                mentorImageUrl: '', 
+                mentorImageUrl: '',
                 expertise: mentorData['prodi'] ?? 'Tidak ada data',
-                pricePerHour: pricePerMeet, // Dari detail_pesanan
+                pricePerHour: pricePerMeet,
                 skills: mentorData['keahlian']?.toString().split(', ') ?? [],
-                technologies: mentorData['tools']?.toString().split(', ') ?? [], 
+                technologies: mentorData['tools']?.toString().split(', ') ?? [],
                 university: mentorData['asal_kampus'] ?? 'Tidak ada data',
-                rating: mentorRating, // Dihitung dari collection pesanan
-                orderCount: orderCount, // Dihitung dari jumlah dokumen
-                about: mentorData['deskripsi'] ?? 'Tidak ada deskripsi', 
+                rating: mentorRating,
+                orderCount: orderCount,
+                about: mentorData['deskripsi'] ?? 'Tidak ada deskripsi',
+                onTentukanWaktuPressed: _navigateToOrderPage, // Tambahkan callback
               ),
             ),
       bottomNavigationBar: FooterUser(
