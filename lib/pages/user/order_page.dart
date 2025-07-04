@@ -84,13 +84,13 @@ class _OrderPageState extends State<OrderPage> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          spreadRadius: 1,
+                          color: Colors.grey.withAlpha(50),
+                          spreadRadius: 5,
                           blurRadius: 5,
-                          offset: const Offset(0, 3),
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
@@ -167,10 +167,10 @@ class _OrderPageState extends State<OrderPage> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          spreadRadius: 1,
+                          color: Colors.grey.withAlpha(50),
+                          spreadRadius: 5,
                           blurRadius: 5,
-                          offset: const Offset(0, 3),
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
@@ -265,10 +265,10 @@ class _OrderPageState extends State<OrderPage> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          spreadRadius: 1,
+                          color: Colors.grey.withAlpha(50),
+                          spreadRadius: 5,
                           blurRadius: 5,
-                          offset: const Offset(0, 3),
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
@@ -283,7 +283,7 @@ class _OrderPageState extends State<OrderPage> {
                   ),
                   const SizedBox(height: 24),
                   
-                  // Catatan (Menggantikan Upload Bukti Pembayaran)
+                  // Catatan 
                   const Text(
                     'Catatan Tambahan',
                     style: TextStyle(
@@ -299,10 +299,10 @@ class _OrderPageState extends State<OrderPage> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          spreadRadius: 1,
+                          color: Colors.grey.withAlpha(50),
+                          spreadRadius: 5,
                           blurRadius: 5,
-                          offset: const Offset(0, 3),
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
