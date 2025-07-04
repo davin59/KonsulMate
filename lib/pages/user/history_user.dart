@@ -1,22 +1,29 @@
 // ignore_for_file: deprecated_member_use
 
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/footer_user.dart';
+import 'payment_page.dart'; 
+import 'order_page.dart';
 
 class HistoryUser extends StatefulWidget {
   final String userName;
   final String userId;
+  final String asalKampus;
 
-  const HistoryUser({super.key, required this.userName, required this.userId});
+  const HistoryUser({
+    super.key, 
+    required this.userName, 
+    required this.userId,
+    this.asalKampus = '',
+  });
 
   @override
   State<HistoryUser> createState() => _UserHistoryPageState();
 }
 
 class _UserHistoryPageState extends State<HistoryUser> {
-  List<dynamic> userOrders = [];
+  List<Map<String, dynamic>> userOrders = [];
   bool isLoading = true;
 
   @override
@@ -26,30 +33,39 @@ class _UserHistoryPageState extends State<HistoryUser> {
   }
 
   Future<void> loadUserOrders() async {
+    setState(() {
+      isLoading = true;
+    });
+
     try {
-      final String data = await rootBundle.loadString('assets/data/dummy.json');
-      final jsonData = json.decode(data);
+      // Ambil data dari Firestore
+      final QuerySnapshot pesananSnapshot = await FirebaseFirestore.instance
+          .collection('pesanan')
+          .where('id_user', isEqualTo: widget.userId)
+          .orderBy('created_at', descending: true)
+          .get();
 
-      // Filter pesanan berdasarkan ID user
-      final List<dynamic> allOrders = jsonData['pesanan'];
-      final filteredOrders =
-          allOrders
-              .where((order) => order['id_user'] == widget.userId)
-              .toList();
+      final List<Map<String, dynamic>> orders = [];
 
-      // Dapatkan data mentor untuk setiap pesanan
-      for (var order in filteredOrders) {
-        final mentors = jsonData['mentor'] as List;
-        final mentor = mentors.firstWhere(
-          (m) => m['id'] == order['id_mentor'],
-          orElse: () => {'nama': 'Nama Mentor', 'prodi': 'Mata Kuliah'},
-        );
+      for (var doc in pesananSnapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
 
-        order['mentor_detail'] = mentor;
+        // Ambil detail_pesanan untuk pesanan ini
+        final detailSnapshot = await FirebaseFirestore.instance
+            .collection('detail_pesanan')
+            .doc(doc.id)
+            .get();
+
+        if (detailSnapshot.exists) {
+          data['detail_pesanan'] = detailSnapshot.data();
+        }
+
+        orders.add(data);
       }
 
       setState(() {
-        userOrders = filteredOrders;
+        userOrders = orders;
         isLoading = false;
       });
     } catch (e) {
@@ -65,88 +81,129 @@ class _UserHistoryPageState extends State<HistoryUser> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FB), // putih pudar
       body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            Container(
-              height: 120,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF80C9FF), // Biru di atas
-                    Colors.white,      // Putih di bawah
-                  ],
+        child: RefreshIndicator(
+          onRefresh: loadUserOrders,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              Container(
+                height: 120,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF80C9FF), // Biru di atas
+                      Colors.white,      // Putih di bawah
+                    ],
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(28),
+                    bottomRight: Radius.circular(28),
+                  ),
                 ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(28),
-                  bottomRight: Radius.circular(28),
-                ),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.only(left: 24.0, top: 40.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'History Konsultasi',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                child: const Padding(
+                  padding: EdgeInsets.only(left: 24.0, top: 40.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'History Konsultasi',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            if (isLoading)
-              const Center(child: CircularProgressIndicator())
-            else if (userOrders.isEmpty)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: Text(
-                    'Belum ada riwayat konsultasi',
-                    style: TextStyle(fontSize: 18),
-                    textAlign: TextAlign.center,
+              const SizedBox(height: 16),
+              if (isLoading)
+                const Center(child: CircularProgressIndicator())
+              else if (userOrders.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: Text(
+                      'Belum ada riwayat konsultasi',
+                      style: TextStyle(fontSize: 18),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-              )
-            else
-              ...userOrders.map((order) => _buildOrderCard(order)),
-          ],
+                )
+              else
+                ...userOrders.map((order) => _buildOrderCard(order)),
+            ],
+          ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: loadUserOrders,
+        backgroundColor: const Color(0xFF80C9FF),
+        child: const Icon(Icons.refresh),
       ),
       bottomNavigationBar: FooterUser(
         currentIndex: 3,
         userName: widget.userName,
         userId: widget.userId,
+        asalKampus: widget.asalKampus,
       ),
     );
   }
 
-  Widget _buildOrderCard(dynamic order) {
-    // Tentukan warna berdasarkan status
+  Widget _buildOrderCard(Map<String, dynamic> order) {
+    // Tentukan warna dan teks berdasarkan status
     Color statusColor;
     Color statusBgColor;
     String statusText = order['status'] ?? 'pending';
+    String displayStatus;
 
-    if (statusText == 'berhasil') {
-      statusColor = Colors.green;
-      statusBgColor = Colors.green.shade50;
-    } else if (statusText == 'gagal') {
-      statusColor = Colors.red;
-      statusBgColor = Colors.red.shade50;
-    } else {
-      // Status pending atau lainnya
-      statusColor = Colors.orange;
-      statusBgColor = Colors.orange.shade50;
+    // Konversi status dari database ke teks yang lebih user-friendly
+    switch (statusText) {
+      case 'menunggu_persetujuan_mentor':
+        statusColor = Colors.orange;
+        statusBgColor = Colors.orange.shade50;
+        displayStatus = 'Menunggu Persetujuan';
+        break;
+      case 'menunggu_pembayaran':
+        statusColor = Colors.blue;
+        statusBgColor = Colors.blue.shade50;
+        displayStatus = 'Menunggu Pembayaran';
+        break;
+      case 'menunggu_verifikasi_admin':
+        statusColor = Colors.purple;
+        statusBgColor = Colors.purple.shade50;
+        displayStatus = 'Verifikasi Pembayaran';
+        break;
+      case 'terkonfirmasi':
+        statusColor = Colors.teal;
+        statusBgColor = Colors.teal.shade50;
+        displayStatus = 'Terkonfirmasi';
+        break;
+      case 'selesai':
+        statusColor = Colors.green;
+        statusBgColor = Colors.green.shade50;
+        displayStatus = 'Selesai';
+        break;
+      case 'dibatalkan':
+        statusColor = Colors.red;
+        statusBgColor = Colors.red.shade50;
+        displayStatus = 'Dibatalkan';
+        break;
+      default:
+        statusColor = Colors.grey;
+        statusBgColor = Colors.grey.shade50;
+        displayStatus = 'Sedang Diproses';
     }
 
-    final mentor =
-        order['mentor_detail'] ??
-        {'nama': 'Nama Mentor', 'prodi': 'Mata Kuliah'};
+    // Format tanggal konsultasi
+    String tanggalKonsultasi = '';
+    if (order['tanggal_konsultasi'] != null) {
+      if (order['tanggal_konsultasi'] is Timestamp) {
+        final date = order['tanggal_konsultasi'].toDate();
+        tanggalKonsultasi = '${date.day}/${date.month}/${date.year}';
+      }
+    }
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -210,32 +267,40 @@ class _UserHistoryPageState extends State<HistoryUser> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
-                              statusText.substring(0, 1).toUpperCase() +
-                                  statusText.substring(1),
+                              displayStatus,
                               style: TextStyle(
                                 color: statusColor,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 12,
                               ),
                             ),
                           ),
                         ],
                       ),
 
-                      // Mata kuliah
+                      // Mata kuliah - Menggunakan prodi dari mentor
                       Text(
-                        mentor['prodi'] ?? 'Mata Kuliah',
+                        order['prodi'] ?? 'Mata Kuliah',
                         style: const TextStyle(fontSize: 14),
                       ),
 
                       const SizedBox(height: 4),
 
-                      // Durasi dan tanggal
+                      // Jadwal dan total pertemuan
                       Text(
-                        'Durasi Pesanan: ${order['total_meets']} jam',
+                        'Jadwal: $tanggalKonsultasi ${order['jam_konsultasi'] ?? ""}',
                         style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                       ),
+                      
+                      // Total meet
                       Text(
-                        'Tanggal di pesan: ${order['tanggal_pesanan']}',
+                        'Total Meet: ${order['total_meet'] ?? 0} (1 meet 1 jam)',
+                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                      ),
+                      
+                      // Total harga
+                      Text(
+                        'Total Harga: Rp ${_formatPrice(order['total_harga'] ?? 0)}',
                         style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                       ),
                     ],
@@ -246,68 +311,392 @@ class _UserHistoryPageState extends State<HistoryUser> {
 
             const SizedBox(height: 16),
 
-            // Rating
+            // Action buttons berdasarkan status
+            _buildActionButtons(order, statusText),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Fungsi helper untuk memformat harga
+  String _formatPrice(int price) {
+    return price.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), 
+      (Match m) => '${m[1]}.'
+    );
+  }
+
+  // Widget untuk tombol aksi berdasarkan status
+  Widget _buildActionButtons(Map<String, dynamic> order, String status) {
+    switch (status) {
+      case 'menunggu_pembayaran':
+        // Tombol Upload Bukti Pembayaran setelah disetujui mentor
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ElevatedButton.icon(
+              onPressed: () {
+                // Navigasi ke halaman pembayaran
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PaymentPage(
+                      orderId: order['id'],
+                      totalAmount: order['total_harga'] ?? 0,
+                      // Tambahkan parameter lain yang dibutuhkan
+                    ),
+                  ),
+                ).then((_) => loadUserOrders());
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              icon: const Icon(Icons.upload_file, size: 18),
+              label: const Text('Upload Bukti Pembayaran'),
+            ),
+          ],
+        );
+    
+      case 'terkonfirmasi':
+        // Tampilkan detail lokasi pertemuan dan tombol Selesai
+        final detail = order['detail_pesanan'] ?? {};
+        final alamat = detail['alamat_meets'] ?? 'Lokasi tidak tersedia';
+        
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Lokasi Pertemuan:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(alamat),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
             Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () => _markAsComplete(order['id']),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  icon: const Icon(Icons.check_circle, size: 18),
+                  label: const Text('Tandai Selesai'),
+                ),
+              ],
+            ),
+          ],
+        );
+    
+      case 'selesai':
+        // Cek apakah sudah dirating
+        final bool alreadyRated = order['rating'] != null;
+        
+        return alreadyRated 
+          ? Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Star rating
                 Row(
                   children: [
                     ...List.generate(5, (index) {
+                      final int rating = order['rating'] ?? 0;
                       return Icon(
-                        index < 4 ? Icons.star : Icons.star_border,
+                        index < rating ? Icons.star : Icons.star_border,
                         color: Colors.amber,
                         size: 20,
                       );
                     }),
                     const SizedBox(width: 8),
-                    const Text(
-                      '4/5',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    Text(
+                      '${order['rating'] ?? 0}/5',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
 
-                // Pesan lagi button or cancellation info
-                if (statusText == 'gagal')
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                // Pesan lagi
+                ElevatedButton.icon(
+                  onPressed: () => _orderAgain(order['id_mentor'], order['nama_mentor']),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF80C9FF),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.red.shade100,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text(
-                      'Pesanan Dibatalkan Mentor',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                  )
-                else
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      // Fungsi untuk memesan lagi
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF80C9FF),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    icon: const Icon(Icons.add, size: 18),
-                    label: const Text('Pesan lagi'),
                   ),
+                  icon: const Icon(Icons.add, size: 18),
+                  label: const Text('Pesan lagi'),
+                ),
               ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () => _showRatingDialog(order['id']),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  icon: const Icon(Icons.star, size: 18),
+                  label: const Text('Beri Rating'),
+                ),
+              ],
+            );
+    
+      case 'dibatalkan':
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 6,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.red.shade100,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Text(
+            'Pesanan dibatalkan',
+            style: TextStyle(
+              color: Colors.red,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        );
+        
+      default:
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 6,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Text(
+            'Menunggu Konfirmasi',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        );
+    }
+  }
+
+  // Tandai pesanan sebagai selesai
+  Future<void> _markAsComplete(String orderId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('pesanan')
+          .doc(orderId)
+          .update({
+        'status': 'selesai',
+      });
+      
+      // Reload data
+      loadUserOrders();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pesanan ditandai selesai')),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error marking as complete: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal: $e')),
+        );
+      }
+    }
+  }
+
+  // Dialog untuk memberikan rating
+  void _showRatingDialog(String orderId) {
+    int selectedRating = 5;
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Beri Rating'),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Bagaimana pengalaman konsultasi Anda?'),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      5,
+                      (index) => IconButton(
+                        icon: Icon(
+                          index < selectedRating ? Icons.star : Icons.star_border,
+                          size: 32,
+                        ),
+                        color: Colors.amber,
+                        onPressed: () {
+                          setState(() {
+                            selectedRating = index + 1;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _submitRating(orderId, selectedRating);
+              },
+              child: const Text('Kirim'),
             ),
           ],
-        ),
-      ),
+        );
+      },
     );
+  }
+
+  // Submit rating ke Firestore
+  Future<void> _submitRating(String orderId, int rating) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('pesanan')
+          .doc(orderId)
+          .update({
+        'rating': rating,
+      });
+      
+      // Reload data
+      loadUserOrders();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Terima kasih atas penilaian Anda')),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error submitting rating: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal: $e')),
+        );
+      }
+    }
+  }
+
+  // Pesan mentor lagi
+  void _orderAgain(String mentorId, String mentorName) async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      
+      // Ambil data mentor dari Firestore
+      DocumentSnapshot mentorDoc = await FirebaseFirestore.instance
+          .collection('mentors')
+          .doc(mentorId)
+          .get();
+      
+      if (!mentorDoc.exists) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Mentor tidak ditemukan')),
+          );
+        }
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
+      
+      Map<String, dynamic> mentorData = mentorDoc.data() as Map<String, dynamic>;
+      
+      // Cari harga per meet terbaru
+      int hargaPerMeet = 0;
+      QuerySnapshot detailPesananSnapshot = await FirebaseFirestore.instance
+          .collection('detail_pesanan')
+          .where('id_mentor', isEqualTo: mentorId)
+          .orderBy('updated_at', descending: true)
+          .limit(1)
+          .get();
+      
+      if (detailPesananSnapshot.docs.isNotEmpty) {
+        var detailData = detailPesananSnapshot.docs.first.data() as Map<String, dynamic>;
+        hargaPerMeet = detailData['harga_per_meet'] ?? 0;
+      }
+      
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+        
+        // Navigasi langsung ke halaman order
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrderPage(
+              userId: widget.userId,
+              userName: widget.userName,
+              asalKampus: widget.asalKampus,
+              mentorId: mentorId,
+              mentorName: mentorName,
+              mentorProdi: mentorData['prodi'] ?? '',
+              mentorKeahlian: mentorData['keahlian'] ?? '',
+              hargaPerMeet: hargaPerMeet,
+              mentorImageUrl: '', // Gunakan string kosong karena belum ada foto
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error navigating to order: $e');
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal membuka halaman order: $e')),
+        );
+      }
+    }
   }
 }
