@@ -87,7 +87,7 @@ class _UserHistoryPageState extends State<HistoryUser> {
             padding: EdgeInsets.zero,
             children: [
               Container(
-                height: 120,
+                height: 80,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -103,7 +103,7 @@ class _UserHistoryPageState extends State<HistoryUser> {
                   ),
                 ),
                 child: const Padding(
-                  padding: EdgeInsets.only(left: 24.0, top: 40.0),
+                  padding: EdgeInsets.only(left: 24.0, top: 0,),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(

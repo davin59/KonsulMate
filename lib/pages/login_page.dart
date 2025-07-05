@@ -93,44 +93,11 @@ class _LoginPageState extends State<LoginPage> {
           .signInWithEmailAndPassword(email: email, password: password);
       String uid = userCredential.user!.uid;
 
-      // Cek di koleksi 'users'
-      DocumentSnapshot userDoc =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
-      if (userDoc.exists && userDoc['role'] == 'user') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder:
-                (context) => HomeUser(
-                  userName: userDoc['nama_lengkap'] ?? '',
-                  userId: uid,
-                  asalKampus: userDoc['asal_kampus'] ?? '',
-                ),
-          ),
-        );
-        return;
-      }
-
-      // Cek di koleksi 'mentors'
-      DocumentSnapshot mentorDoc =
-          await FirebaseFirestore.instance.collection('mentors').doc(uid).get();
-      if (mentorDoc.exists && mentorDoc['role'] == 'mentor') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder:
-                (context) => HomepageMentor(
-                  userName: mentorDoc['nama_lengkap'] ?? '',
-                  userId: uid,
-                ),
-          ),
-        );
-        return;
-      }
-
-            // Cek di koleksi 'admin'
-      DocumentSnapshot adminDoc =
-          await FirebaseFirestore.instance.collection('admin').doc(uid).get();
+      // Cek di koleksi 'admin'
+      DocumentSnapshot adminDoc = await FirebaseFirestore.instance
+          .collection('admin')
+          .doc(uid)
+          .get();
       if (adminDoc.exists) {
         Navigator.pushReplacement(
           context,
@@ -144,10 +111,54 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      // Jika tidak ditemukan role
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Role tidak ditemukan di Firestore!')),
-      );
+      if (isMentorSelected) {
+        // Cek di koleksi 'mentors'
+        DocumentSnapshot mentorDoc = await FirebaseFirestore.instance
+            .collection('mentors')
+            .doc(uid)
+            .get();
+        if (mentorDoc.exists && mentorDoc['role'] == 'mentor') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomepageMentor(
+                userName: mentorDoc['nama_lengkap'] ?? '',
+                userId: uid,
+              ),
+            ),
+          );
+          return;
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Akun ini tidak terdaftar sebagai mentor!')),
+          );
+          return;
+        }
+      } else {
+        // Cek di koleksi 'users'
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .get();
+        if (userDoc.exists && userDoc['role'] == 'user') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeUser(
+                userName: userDoc['nama_lengkap'] ?? '',
+                userId: uid,
+                asalKampus: userDoc['asal_kampus'] ?? '',
+              ),
+            ),
+          );
+          return;
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Akun ini tidak terdaftar sebagai user!')),
+          );
+          return;
+        }
+      }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message ?? 'Email atau password salah!')),

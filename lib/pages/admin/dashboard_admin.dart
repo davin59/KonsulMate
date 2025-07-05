@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'verifikasi_detail.dart'; // Pastikan file ini dibuat
+import 'verifikasi_detail.dart'; // Pastikan file ini dibuat;
+import '../login_page.dart'; // Import LoginPage
 
 class DashboardAdmin extends StatefulWidget {
   final String adminId;
@@ -217,15 +218,13 @@ class _DashboardAdminState extends State<DashboardAdmin> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadPendingPayments,
-          ),
-          IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
               if (context.mounted) {
-                Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
               }
             },
           ),
