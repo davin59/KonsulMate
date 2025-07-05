@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/pages/login_page.dart';
 
 class ProfileMentor extends StatelessWidget {
   final String userName;
@@ -74,7 +75,7 @@ class _EditProfileMentorState extends State<EditProfileMentor> {
           .doc(widget.userId)
           .get();
 
-      if (!mounted) return; 
+      if (!mounted) return;
 
       if (mentorDoc.exists) {
         final mentorData = mentorDoc.data() as Map<String, dynamic>;
@@ -95,12 +96,12 @@ class _EditProfileMentorState extends State<EditProfileMentor> {
         profilePhotoUrl = mentorData['foto_profil'];
       }
     } catch (e) {
-      if (!mounted) return; 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error mengambil data: ${e.toString()}')),
       );
     } finally {
-      if (mounted) { 
+      if (mounted) {
         setState(() {
           isLoading = false;
         });
@@ -154,10 +155,12 @@ class _EditProfileMentorState extends State<EditProfileMentor> {
   Future<void> _handleLogout() async {
     try {
       await FirebaseAuth.instance.signOut();
-      
+
       if (!mounted) return;
       // Navigate to login screen
-      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -233,8 +236,11 @@ class _EditProfileMentorState extends State<EditProfileMentor> {
               keyboardType: keyboardType,
               decoration: InputDecoration(
                 suffixIcon: Icon(icon, color: Colors.black54),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.grey),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                 isDense: true,
               ),
               style: const TextStyle(
@@ -244,7 +250,6 @@ class _EditProfileMentorState extends State<EditProfileMentor> {
               ),
             ),
           ),
-          const Divider(color: Colors.grey, thickness: 1),
         ],
       ),
     );
@@ -263,10 +268,15 @@ class _EditProfileMentorState extends State<EditProfileMentor> {
                     Container(
                       height: MediaQuery.of(context).size.height * 0.35,
                       width: double.infinity,
-                      color: const Color(0xFF80C9FF),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF80C9FF), Color(0xFF007BFF)],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
                       child: Stack(
                         children: [
-                          // App Bar elements
                           Positioned(
                             top: 40,
                             left: 10,
@@ -280,7 +290,7 @@ class _EditProfileMentorState extends State<EditProfileMentor> {
                                     color: Colors.white,
                                   ),
                                   onPressed: () {
-                                    Navigator.of(context).pop(); // Kembali ke halaman sebelumnya
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                                 const Text(
@@ -313,7 +323,6 @@ class _EditProfileMentorState extends State<EditProfileMentor> {
                               ],
                             ),
                           ),
-                          // Profile Picture
                           Positioned(
                             bottom: 20,
                             left: 0,
@@ -327,6 +336,13 @@ class _EditProfileMentorState extends State<EditProfileMentor> {
                                     height: 120,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
                                       border: Border.all(
                                         color: Colors.white,
                                         width: 3,
@@ -357,7 +373,7 @@ class _EditProfileMentorState extends State<EditProfileMentor> {
                                       ),
                                     ),
                                     child: const Icon(
-                                      Icons.add,
+                                      Icons.camera_alt,
                                       color: Colors.white,
                                       size: 20,
                                     ),
@@ -454,24 +470,34 @@ class _EditProfileMentorState extends State<EditProfileMentor> {
                         ),
                         width: double.infinity,
                         child: SizedBox(
-                          height: 36,
+                          height: 50,
                           child: ElevatedButton(
-                            // Gunakan fungsi terpisah untuk logout
                             onPressed: _handleLogout,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              padding: EdgeInsets.zero,
+                              backgroundColor: Colors.white, // Initial background color
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
-                                side: const BorderSide(color: Colors.red),
                               ),
-                              elevation: 2,
-                              minimumSize: const Size(0, 36),
-                              maximumSize: const Size(double.infinity, 36),
+                              elevation: 5,
+                              foregroundColor: Colors.red, // Initial text color
+                            ).copyWith(
+                              foregroundColor: MaterialStateProperty.resolveWith((states) {
+                                if (states.contains(MaterialState.pressed)) {
+                                  return Colors.white; // Text color when pressed
+                                }
+                                return Colors.red; // Default text color
+                              }),
+                              backgroundColor: MaterialStateProperty.resolveWith((states) {
+                                if (states.contains(MaterialState.pressed)) {
+                                  return Colors.red; // Background color when pressed
+                                }
+                                return Colors.white; // Default background color
+                              }),
                             ),
                             child: const Text(
                               'Log Out',
-                              style: TextStyle(fontSize: 14, color: Colors.red),
+                              style: TextStyle(fontSize: 16),
                             ),
                           ),
                         ),

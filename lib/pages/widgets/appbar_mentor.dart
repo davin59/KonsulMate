@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../mentor/profilepage_mentor.dart'; 
+import '../mentor/profilepage_mentor.dart';
 
 class AppBarMentor extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
-  final String? bidangKeahlian; 
+  final String? bidangKeahlian;
   final String? userId;
 
   const AppBarMentor({
@@ -17,18 +17,7 @@ class AppBarMentor extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(180);
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-      future: _getBidangKeahlian(),
-      builder: (context, snapshot) {
-        String keahlian = snapshot.data ?? bidangKeahlian ?? 'Mentor';
-        return _buildAppBar(context, keahlian);
-      },
-    );
-  }
+  Size get preferredSize => const Size.fromHeight(100); // Kurangi tinggi appbar
 
   Future<String> _getBidangKeahlian() async {
     if (userId == null) return bidangKeahlian ?? '';
@@ -42,6 +31,17 @@ class AppBarMentor extends StatelessWidget implements PreferredSizeWidget {
       debugPrint('Error getting mentor data: $e');
     }
     return bidangKeahlian ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+      future: _getBidangKeahlian(),
+      builder: (context, snapshot) {
+        String keahlian = snapshot.data ?? bidangKeahlian ?? 'Mentor';
+        return _buildAppBar(context, keahlian);
+      },
+    );
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context, String keahlian) {
@@ -64,38 +64,11 @@ class AppBarMentor extends StatelessWidget implements PreferredSizeWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16), // Kurangi padding vertikal
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Name and expertise (di kiri)
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Hello, $userName',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        keahlian,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[700],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-                // Profile button (di kanan)
+                // Profile photo (di kiri pojok)
                 GestureDetector(
                   onTap: () {
                     if (userId != null) {
@@ -111,24 +84,40 @@ class AppBarMentor extends StatelessWidget implements PreferredSizeWidget {
                       );
                     }
                   },
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                  child: const CircleAvatar(
+                    radius: 28,
+                    backgroundImage: AssetImage('assets/mentor_avatar.png'),
+                    backgroundColor: Colors.grey,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Name and expertise (di sebelah kanan foto)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        userName,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.person,
-                      color: Color(0xFF80C9FF),
-                    ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        keahlian,
+                        style: const TextStyle(
+                          color: Colors.black54,
+                          fontSize: 14,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
               ],

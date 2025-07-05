@@ -6,6 +6,7 @@ class AppBarUser extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
   final String asalKampus;
   final String? userId;
+
   const AppBarUser({
     super.key,
     required this.userName,
@@ -13,10 +14,12 @@ class AppBarUser extends StatelessWidget implements PreferredSizeWidget {
     this.userId,
   });
 
+  @override
+  Size get preferredSize => const Size.fromHeight(100); // Samakan tinggi dengan AppBarMentor
+
   Future<String> _getAsalKampus() async {
     if (userId == null) return asalKampus;
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
     return doc.data()?['asal_kampus'] ?? asalKampus;
   }
 
@@ -38,7 +41,7 @@ class AppBarUser extends StatelessWidget implements PreferredSizeWidget {
 
   PreferredSizeWidget _buildAppBar(BuildContext context, String kampus) {
     return PreferredSize(
-      preferredSize: const Size.fromHeight(160),
+      preferredSize: preferredSize,
       child: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -56,12 +59,38 @@ class AppBarUser extends StatelessWidget implements PreferredSizeWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16), // Kurangi padding vertikal
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Tambahkan ini
               children: [
-                // Name and campus (sekarang di kiri)
+                // Profile photo (di kiri pojok)
+                GestureDetector(
+                  onTap: () {
+                    if (userId != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserProfilePage(
+                            userName: userName,
+                            userId: userId!,
+                            asalKampus: kampus,
+                          ),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('User ID tidak tersedia')),
+                      );
+                    }
+                  },
+                  child: const CircleAvatar(
+                    radius: 28,
+                    backgroundImage: AssetImage('assets/user_avatar.png'),
+                    backgroundColor: Colors.grey,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Name and campus (di sebelah kanan foto)
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,35 +119,6 @@ class AppBarUser extends StatelessWidget implements PreferredSizeWidget {
                     ],
                   ),
                 ),
-                
-                const SizedBox(width: 16),
-                
-                // Profile photo (sekarang di kanan)
-                GestureDetector(
-                  onTap: () {
-                    if (userId != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserProfilePage(
-                            userName: userName,
-                            userId: userId!,
-                            asalKampus: kampus,
-                          ),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('User ID tidak tersedia')),
-                      );
-                    }
-                  },
-                  child: const CircleAvatar(
-                    radius: 28,
-                    backgroundImage: AssetImage('assets/mentor_avatar.png'),
-                    backgroundColor: Colors.grey,
-                  ),
-                ),
               ],
             ),
           ),
@@ -126,7 +126,4 @@ class AppBarUser extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(160);
 }

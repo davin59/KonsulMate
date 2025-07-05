@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/pages/login_page.dart';
 
 class UserProfilePage extends StatelessWidget {
   final String userName;
@@ -41,7 +42,6 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  // Controllers for form fields
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _genderController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -70,12 +70,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           .doc(widget.userId)
           .get();
 
-      if (!mounted) return; 
+      if (!mounted) return;
 
       if (userDoc.exists) {
         final userData = userDoc.data() as Map<String, dynamic>;
 
-        // Set controller values from Firebase data
         _fullNameController.text = userData['nama_lengkap'] ?? '';
         _genderController.text = userData['jenis_kelamin'] ?? 'Tidak diisi';
         _phoneController.text = userData['no_hp'] ?? '';
@@ -83,16 +82,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _majorController.text = userData['prodi'] ?? '';
         _emailController.text = userData['email'] ?? '';
 
-        // Get profile photo if exists
         profilePhotoUrl = userData['foto_profil'];
       }
     } catch (e) {
-      if (!mounted) return; 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error mengambil data: ${e.toString()}')),
       );
     } finally {
-      if (mounted) { 
+      if (mounted) {
         setState(() {
           isLoading = false;
         });
@@ -106,7 +104,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
 
     try {
-      // Update user data in Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.userId)
@@ -138,14 +135,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  // Fungsi untuk handle logout secara terpisah
   Future<void> _handleLogout() async {
     try {
       await FirebaseAuth.instance.signOut();
-      
+
       if (!mounted) return;
-      // Navigate to login screen
-      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -217,8 +214,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               keyboardType: keyboardType,
               decoration: InputDecoration(
                 suffixIcon: Icon(icon, color: Colors.black54),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.grey),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                 isDense: true,
               ),
               style: const TextStyle(
@@ -228,7 +228,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
           ),
-          const Divider(color: Colors.grey, thickness: 1),
         ],
       ),
     );
@@ -247,10 +246,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     Container(
                       height: MediaQuery.of(context).size.height * 0.35,
                       width: double.infinity,
-                      color: Colors.lightBlue,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF80C9FF), Color(0xFF007BFF)],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
                       child: Stack(
                         children: [
-                          // App Bar elements
                           Positioned(
                             top: 40,
                             left: 10,
@@ -264,7 +268,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     color: Colors.white,
                                   ),
                                   onPressed: () {
-                                    Navigator.of(context).pop(); // Kembali ke halaman sebelumnya
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                                 const Text(
@@ -297,7 +301,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ],
                             ),
                           ),
-                          // Profile Picture
                           Positioned(
                             bottom: 20,
                             left: 0,
@@ -311,6 +314,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     height: 120,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
                                       border: Border.all(
                                         color: Colors.white,
                                         width: 3,
@@ -341,7 +351,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ),
                                     ),
                                     child: const Icon(
-                                      Icons.add,
+                                      Icons.camera_alt,
                                       color: Colors.white,
                                       size: 20,
                                     ),
@@ -377,7 +387,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               keyboardType: TextInputType.phone,
                             ),
                             _buildProfileField(
-                              label: 'Asal Kampus',
+                              label: 'Kampus/ Asal Kampus',
                               icon: Icons.school,
                               controller: _campusController,
                             ),
@@ -391,7 +401,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               icon: Icons.email,
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
-                              readOnly: true, // Email biasanya tidak diubah
+                              readOnly: true,
                             ),
                             const SizedBox(height: 80),
                           ],
@@ -400,7 +410,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ],
                 ),
-                // Sticky Log Out Button
                 Positioned(
                   left: 0,
                   right: 0,
@@ -415,24 +424,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         width: double.infinity,
                         child: SizedBox(
-                          height: 36,
+                          height: 50,
                           child: ElevatedButton(
-                            // Gunakan fungsi terpisah untuk logout
                             onPressed: _handleLogout,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              padding: EdgeInsets.zero,
+                              backgroundColor: Colors.white, // Initial background color
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
-                                side: const BorderSide(color: Colors.red),
                               ),
-                              elevation: 2,
-                              minimumSize: const Size(0, 36),
-                              maximumSize: const Size(double.infinity, 36),
+                              elevation: 5,
+                              foregroundColor: Colors.red, // Initial text color
+                            ).copyWith(
+                              foregroundColor: MaterialStateProperty.resolveWith((states) {
+                                if (states.contains(MaterialState.pressed)) {
+                                  return Colors.white; // Text color when pressed
+                                }
+                                return Colors.red; // Default text color
+                              }),
+                              backgroundColor: MaterialStateProperty.resolveWith((states) {
+                                if (states.contains(MaterialState.pressed)) {
+                                  return Colors.red; // Background color when pressed
+                                }
+                                return Colors.white; // Default background color
+                              }),
                             ),
                             child: const Text(
                               'Log Out',
-                              style: TextStyle(fontSize: 14, color: Colors.red),
+                              style: TextStyle(fontSize: 16),
                             ),
                           ),
                         ),
