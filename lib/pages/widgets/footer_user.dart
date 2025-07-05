@@ -29,7 +29,7 @@ class FooterUser extends StatelessWidget {
       case 1:
         page = ListChatUser(userName: userName, userId: userId);
         break;
-      case 3:
+      case 2:
         page = HistoryUser(userName: userName, userId: userId);
         break;
       default:
@@ -44,9 +44,9 @@ class FooterUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 60,
+      height: 70,
       decoration: const BoxDecoration(
-        color: Color(0xFF80C9FF),
+        color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -58,14 +58,9 @@ class FooterUser extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildNavItem(context, 0, Icons.home_outlined),
-          _buildNavItem(
-            context,
-            1,
-            Icons.chat_bubble_outline,
-            iconSize: 22,
-          ), // icon chat lebih kecil
-          _buildNavItem(context, 3, Icons.history),
+          _buildNavItem(context, 0, Icons.home_outlined, "Beranda"),
+          _buildNavItem(context, 1, Icons.chat_bubble_outline, "Chat"),
+          _buildNavItem(context, 2, Icons.history, "Riwayat"),
         ],
       ),
     );
@@ -74,27 +69,30 @@ class FooterUser extends StatelessWidget {
   Widget _buildNavItem(
     BuildContext context,
     int index,
-    IconData icon, {
-    double iconSize = 28,
-    double boxSize = 48,
+    IconData icon,
+    String label, {
+    double iconSize = 24,
   }) {
     final isSelected = index == currentIndex;
     return InkWell(
       onTap: () => _onItemTapped(context, index),
-      child: SizedBox(
-        width: boxSize,
-        height: boxSize,
-        child:
-            isSelected
-                ? Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white24,
-                  ),
-                  alignment: Alignment.center,
-                  child: Icon(icon, color: Colors.white, size: iconSize),
-                )
-                : Icon(icon, color: Colors.white, size: iconSize),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: isSelected ? const Color(0xFF80C9FF) : Colors.grey,
+            size: iconSize,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: isSelected ? const Color(0xFF80C9FF) : Colors.grey,
+            ),
+          ),
+        ],
       ),
     );
   }
