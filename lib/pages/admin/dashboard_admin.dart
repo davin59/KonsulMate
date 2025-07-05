@@ -57,14 +57,16 @@ class _DashboardAdminState extends State<DashboardAdmin> {
         if (detailDoc.exists) {
           final detailData = detailDoc.data() as Map<String, dynamic>;
           // Menggunakan cara yang aman untuk mengakses nested map
-          final buktiData = detailData['bukti_pembayaran'];
-          final buktiUrl = buktiData != null ? buktiData['url'] : null;
-          final tanggalBayar = buktiData != null ? buktiData['tanggal'] : null;
+          final pembayaran = detailData['pembayaran'];
+          final kodePembayaran = pembayaran != null ? pembayaran['kode_pembayaran'] : null;
+          final buktiUrl = pembayaran != null ? pembayaran['bukti_url'] : null;
+          final tanggalBayar = pembayaran != null ? pembayaran['tanggal'] : null;
 
-          // Hanya tambahkan jika ada bukti pembayaran
-          if (buktiUrl != null) {
+          // Hanya tambahkan jika ada bukti pembayaran atau kode pembayaran
+          if (buktiUrl != null || kodePembayaran != null) {
             data['detail_pesanan'] = detailData;
             data['bukti_url'] = buktiUrl;
+            data['kode_pembayaran'] = kodePembayaran;
             data['tanggal_bayar'] = tanggalBayar;
             payments.add(data);
           }
@@ -187,6 +189,18 @@ class _DashboardAdminState extends State<DashboardAdmin> {
                     style: TextStyle(color: Colors.blue)),
                 ],
               ),
+              // Tampilkan kode pembayaran jika ada
+              if (payment['kode_pembayaran'] != null) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(Icons.confirmation_number, size: 16, color: Colors.green),
+                    const SizedBox(width: 8),
+                    Text('Kode Pembayaran: ${payment['kode_pembayaran']}',
+                        style: const TextStyle(color: Colors.green)),
+                  ],
+                ),
+              ],
             ],
           ),
         ),

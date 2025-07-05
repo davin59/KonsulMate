@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart'; // untuk kIsWeb
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -20,9 +22,13 @@ class PaymentPage extends StatefulWidget {
 
 class _PaymentPageState extends State<PaymentPage> {
   File? _imageFile;
+  Uint8List? _webImage; // Tambahkan ini
   bool _isUploading = false;
   String? _errorMessage;
   final ImagePicker _picker = ImagePicker();
+  
+  bool _isKodeMode = false;
+  final TextEditingController _kodeController = TextEditingController();
   
   @override
   void initState() {
@@ -38,12 +44,22 @@ class _PaymentPageState extends State<PaymentPage> {
         maxWidth: 1024,
         imageQuality: 85,
       );
-      
       if (pickedFile != null) {
-        setState(() {
-          _imageFile = File(pickedFile.path);
-          _errorMessage = null;
-        });
+        if (kIsWeb) {
+          // Untuk web, baca bytes
+          final bytes = await pickedFile.readAsBytes();
+          setState(() {
+            _webImage = bytes;
+            _imageFile = null;
+            _errorMessage = null;
+          });
+        } else {
+          setState(() {
+            _imageFile = File(pickedFile.path);
+            _webImage = null;
+            _errorMessage = null;
+          });
+        }
       }
     } catch (e) {
       setState(() {
@@ -54,9 +70,15 @@ class _PaymentPageState extends State<PaymentPage> {
 
   // Fungsi untuk upload bukti dan update Firestore
   Future<void> _submitPayment() async {
-    if (_imageFile == null) {
+    if (!_isKodeMode && _imageFile == null && _webImage == null) {
       setState(() {
         _errorMessage = 'Silakan pilih bukti pembayaran terlebih dahulu';
+      });
+      return;
+    }
+    if (_isKodeMode && _kodeController.text.trim().isEmpty) {
+      setState(() {
+        _errorMessage = 'Silakan masukkan kode pembayaran';
       });
       return;
     }
@@ -67,30 +89,47 @@ class _PaymentPageState extends State<PaymentPage> {
     });
 
     try {
-      // 1. Upload bukti ke Firebase Storage
-      final String fileName = 'bukti_${widget.orderId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final Reference storageRef = FirebaseStorage.instance
-          .ref()
-          .child('bukti_pembayaran')
-          .child(fileName);
+      String? downloadUrl;
+      if (!_isKodeMode) {
+        if (kIsWeb && _webImage != null) {
+          // Untuk web, upload dari Uint8List
+          final String fileName = 'bukti_${widget.orderId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+          final Reference storageRef = FirebaseStorage.instance
+              .ref()
+              .child('bukti_pembayaran')
+              .child(fileName);
+          
+          final UploadTask uploadTask = storageRef.putData(_webImage!);
+          final TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
+          downloadUrl = await taskSnapshot.ref.getDownloadURL();
+        } else {
+          // 1. Upload bukti ke Firebase Storage
+          final String fileName = 'bukti_${widget.orderId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+          final Reference storageRef = FirebaseStorage.instance
+              .ref()
+              .child('bukti_pembayaran')
+              .child(fileName);
+          
+          final UploadTask uploadTask = storageRef.putFile(_imageFile!);
+          final TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
+          downloadUrl = await taskSnapshot.ref.getDownloadURL();
+        }
+      }
       
-      final UploadTask uploadTask = storageRef.putFile(_imageFile!);
-      final TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
-      final String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-      
-      // 2. Update detail_pesanan
+      // Simpan ke Firestore
       await FirebaseFirestore.instance
           .collection('detail_pesanan')
           .doc(widget.orderId)
           .update({
-        'bukti_pembayaran': {
-          'url': downloadUrl,
+        'pembayaran': {
+          if (!_isKodeMode && downloadUrl != null) 'bukti_url': downloadUrl,
+          if (_isKodeMode) 'kode_pembayaran': _kodeController.text.trim(),
           'tanggal': FieldValue.serverTimestamp(),
         },
         'updated_at': FieldValue.serverTimestamp(),
       });
       
-      // 3. Update status pesanan
+      // Update status pesanan seperti biasa
       await FirebaseFirestore.instance
           .collection('pesanan')
           .doc(widget.orderId)
@@ -229,43 +268,89 @@ class _PaymentPageState extends State<PaymentPage> {
             
             const SizedBox(height: 12),
             
-            // Preview bukti pembayaran yang dipilih
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
+            // Pilihan metode pembayaran
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ChoiceChip(
+                  label: const Text('Upload Gambar'),
+                  selected: !_isKodeMode,
+                  onSelected: (val) {
+                    setState(() {
+                      _isKodeMode = false;
+                    });
+                  },
                 ),
-                child: _imageFile == null
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Icons.add_photo_alternate,
-                            size: 50,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Tap untuk menambahkan bukti pembayaran',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          _imageFile!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                        ),
-                      ),
-              ),
+                const SizedBox(width: 12),
+                ChoiceChip(
+                  label: const Text('Input Kode Pembayaran'),
+                  selected: _isKodeMode,
+                  onSelected: (val) {
+                    setState(() {
+                      _isKodeMode = true;
+                    });
+                  },
+                ),
+              ],
             ),
+
+            const SizedBox(height: 16),
+            
+            // Ganti bagian preview/upload bukti:
+            _isKodeMode
+              ? TextField(
+                  controller: _kodeController,
+                  decoration: const InputDecoration(
+                    labelText: 'Kode Pembayaran',
+                    border: OutlineInputBorder(),
+                    hintText: 'Masukkan kode pembayaran dari aplikasi bank/ewallet',
+                  ),
+                )
+              : GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    width: double.infinity,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: _imageFile == null && _webImage == null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(
+                                Icons.add_photo_alternate,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Tap untuk menambahkan bukti pembayaran',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
+                          )
+                        : kIsWeb && _webImage != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.memory(
+                                  _webImage!,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
+                              )
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.file(
+                                  _imageFile!,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
+                              ),
+                  ),
+                ),
             
             // Tampilkan error jika ada
             if (_errorMessage != null) ...[
