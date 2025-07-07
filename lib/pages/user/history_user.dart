@@ -80,59 +80,144 @@ class _UserHistoryPageState extends State<HistoryUser> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FB), // putih pudar
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80), // lebih pendek
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF80C9FF), Color(0xFFB6E0FE)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(32),
+              bottomRight: Radius.circular(32),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x3380C9FF),
+                blurRadius: 16,
+                offset: Offset(0, 8),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10), // padding vertikal lebih kecil
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.18),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.blue.withOpacity(0.08),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Icons.history_edu_rounded, color: Color(0xFF1976D2), size: 32),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          'History Konsultasi',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Lihat riwayat konsultasi kamu',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF1976D2),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: loadUserOrders,
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              Container(
-                height: 80,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF80C9FF), // Biru di atas
-                      Colors.white,      // Putih di bawah
-                    ],
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(28),
-                    bottomRight: Radius.circular(28),
-                  ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 24.0, top: 0,),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'History Konsultasi',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+              // Hapus Container header lama di sini
+              // ...existing code...
+              // Mulai dari const SizedBox(height: 20),
+              const SizedBox(height: 20),
+              if (isLoading)
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF80C9FF)),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              if (isLoading)
-                const Center(child: CircularProgressIndicator())
+                )
               else if (userOrders.isEmpty)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: Text(
-                      'Belum ada riwayat konsultasi',
-                      style: TextStyle(fontSize: 18),
-                      textAlign: TextAlign.center,
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(40),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.history,
+                          size: 80,
+                          color: Colors.grey.withOpacity(0.5),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Belum ada riwayat konsultasi',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   ),
                 )
               else
-                ...userOrders.map((order) => _buildOrderCard(order)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    children: userOrders.asMap().entries.map((entry) {
+                      final int index = entry.key;
+                      final Map<String, dynamic> order = entry.value;
+                      
+                      return AnimatedOpacity(
+                        opacity: 1.0,
+                        duration: Duration(milliseconds: 500 + (index * 100)),
+                        child: AnimatedPadding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          duration: Duration(milliseconds: 500 + (index * 100)),
+                          child: _buildOrderCard(order),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
             ],
           ),
         ),
@@ -140,10 +225,11 @@ class _UserHistoryPageState extends State<HistoryUser> {
       floatingActionButton: FloatingActionButton(
         onPressed: loadUserOrders,
         backgroundColor: const Color(0xFF80C9FF),
-        child: const Icon(Icons.refresh),
+        elevation: 4,
+        child: const Icon(Icons.refresh, color: Colors.white),
       ),
       bottomNavigationBar: FooterUser(
-        currentIndex: 3,
+        currentIndex: 2,
         userName: widget.userName,
         userId: widget.userId,
         asalKampus: widget.asalKampus,
@@ -206,117 +292,270 @@ class _UserHistoryPageState extends State<HistoryUser> {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            spreadRadius: 1,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Gambar mentor
-                const CircleAvatar(
-                  radius: 32,
-                  backgroundColor: Colors.grey,
-                  child: Icon(Icons.person, size: 40, color: Colors.white),
-                ),
-
-                const SizedBox(width: 12),
-
-                // Info mentor
-                Expanded(
-                  child: Column(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {}, // Optional tap effect
+            splashColor: Colors.blue.withOpacity(0.1),
+            highlightColor: Colors.transparent,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Nama mentor
-                          Expanded(
-                            child: Text(
-                              order['nama_mentor'] ?? 'Nama Mentor',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                      // Gambar mentor dengan efek shadow
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                              offset: const Offset(0, 2),
                             ),
+                          ],
+                        ),
+                        child: const CircleAvatar(
+                          radius: 32,
+                          backgroundColor: Color(0xFF80C9FF),
+                          child: Icon(
+                            Icons.person,
+                            size: 40,
+                            color: Colors.white,
                           ),
+                        ),
+                      ),
 
-                          // Status label
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
+                      const SizedBox(width: 16),
+
+                      // Info mentor
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Nama mentor
+                                Expanded(
+                                  child: Text(
+                                    order['nama_mentor'] ?? 'Nama Mentor',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+
+                                // Status label dengan desain yang lebih modern
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: statusBgColor,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: statusColor.withOpacity(0.2),
+                                        blurRadius: 4,
+                                        spreadRadius: 0,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      // Tambahkan ikon sesuai status
+                                      if (statusText == 'terkonfirmasi' || statusText == 'selesai')
+                                        const Icon(Icons.check_circle, color: Colors.green, size: 16)
+                                      else if (statusText == 'menunggu_persetujuan_mentor' || statusText == 'menunggu_pembayaran' || statusText == 'menunggu_verifikasi_admin') ...[
+                                        const SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6), // Tambahkan gap di sini
+                                      ]
+                                      else if (statusText == 'dibatalkan')
+                                        const Icon(Icons.cancel, color: Colors.red, size: 16),
+                                      if ((statusText == 'terkonfirmasi' || statusText == 'selesai' || statusText == 'dibatalkan'))
+                                        const SizedBox(width: 6),
+                                      Text(
+                                        displayStatus,
+                                        style: TextStyle(
+                                          color: statusColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            decoration: BoxDecoration(
-                              color: statusBgColor,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Text(
-                              displayStatus,
-                              style: TextStyle(
-                                color: statusColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
+
+                            const SizedBox(height: 4),
+
+                            // Mata kuliah - Menggunakan prodi dari mentor dengan efek card
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                order['prodi'] ?? 'Mata Kuliah',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
 
-                      // Mata kuliah - Menggunakan prodi dari mentor
-                      Text(
-                        order['prodi'] ?? 'Mata Kuliah',
-                        style: const TextStyle(fontSize: 14),
-                      ),
+                            const SizedBox(height: 6),
 
-                      const SizedBox(height: 4),
-
-                      // Jadwal dan total pertemuan
-                      Text(
-                        'Jadwal: $tanggalKonsultasi ${order['jam_konsultasi'] ?? ""}',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                      ),
-                      
-                      // Total meet
-                      Text(
-                        'Total Meet: ${order['total_meet'] ?? 0} (1 meet 1 jam)',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                      ),
-                      
-                      // Total harga
-                      Text(
-                        'Total Harga: Rp ${_formatPrice(order['total_harga'] ?? 0)}',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                            // Info card untuk jadwal
+                            Container(
+                              margin: const EdgeInsets.only(top: 2),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.calendar_today,
+                                    size: 14,
+                                    color: Color(0xFF80C9FF),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Jadwal: $tanggalKonsultasi',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[700],
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            
+                            // Info card untuk jam
+                            Container(
+                              margin: const EdgeInsets.only(top: 2),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.access_time,
+                                    size: 14,
+                                    color: Color(0xFF80C9FF),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    order['jam_konsultasi'] ?? "Jam tidak tersedia",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[700],
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            
+                            // Info card untuk total meet
+                            Container(
+                              margin: const EdgeInsets.only(top: 2),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.videocam,
+                                    size: 14,
+                                    color: Color(0xFF80C9FF),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Total Meet: ${order['total_meet'] ?? 0} (1 meet 1 jam)',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[700],
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            
+                            // Info card untuk total harga
+                            Container(
+                              margin: const EdgeInsets.only(top: 2),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.payments_outlined,
+                                    size: 14,
+                                    color: Color(0xFF80C9FF),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Total Harga: Rp ${_formatPrice(order['total_harga'] ?? 0)}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[700],
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
+
+                  // Divider modern
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    height: 1,
+                    color: Colors.grey.withOpacity(0.2),
+                  ),
+
+                  // Action buttons berdasarkan status
+                  _buildActionButtons(order, statusText),
+                ],
+              ),
             ),
-
-            const SizedBox(height: 16),
-
-            // Action buttons berdasarkan status
-            _buildActionButtons(order, statusText),
-          ],
+          ),
         ),
-      ),
-    );
+      ),);
   }
 
   // Fungsi helper untuk memformat harga
@@ -630,25 +869,15 @@ class _UserHistoryPageState extends State<HistoryUser> {
                 horizontal: 12,
                 vertical: 6,
               ),
-              decoration: BoxDecoration(
-                color: Colors.red.shade100,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                'Pesanan dibatalkan',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
+
             ),
             
             // Tampilkan catatan mentor jika pesanan ditolak
             if (catatanMentor != null && catatanMentor.toString().isNotEmpty) ...[
               const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.all(12),
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.red.shade50,
                   borderRadius: BorderRadius.circular(8),
@@ -661,11 +890,11 @@ class _UserHistoryPageState extends State<HistoryUser> {
                       'Alasan Penolakan:',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 13,
+                        fontSize: 14,
                         color: Colors.red,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       catatanMentor,
                       style: TextStyle(fontSize: 13, color: Colors.red.shade800),
@@ -887,3 +1116,4 @@ class _UserHistoryPageState extends State<HistoryUser> {
     }
   }
 }
+

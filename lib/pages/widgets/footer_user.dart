@@ -20,21 +20,23 @@ class FooterUser extends StatelessWidget {
   });
 
   void _onItemTapped(BuildContext context, int index) {
-    if (index == currentIndex) return;
+    if (index == currentIndex) return; // This already exists and prevents redundant navigation
+
     Widget page;
     switch (index) {
       case 0:
-        page = HomeUser(userName: userName, userId: userId);
+        page = HomeUser(userName: userName, userId: userId, asalKampus: asalKampus);
         break;
       case 1:
-        page = ListChatUser(userName: userName, userId: userId);
+        page = ListChatUser(userName: userName, userId: userId, asalKampus: asalKampus);
         break;
       case 2:
-        page = HistoryUser(userName: userName, userId: userId);
+        page = HistoryUser(userName: userName, userId: userId, asalKampus: asalKampus);
         break;
       default:
-        page = HomeUser(userName: userName, userId: userId);
+        page = HomeUser(userName: userName, userId: userId, asalKampus: asalKampus);
     }
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => page),

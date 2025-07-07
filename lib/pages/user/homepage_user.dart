@@ -6,6 +6,7 @@ import '../widgets/footer_user.dart';
 import '../widgets/mentor_section.dart';
 import 'mentor_detail_page.dart';
 import '../widgets/search_bar.dart';
+import '../widgets/iklan.dart';
 
 class HomeUser extends StatefulWidget {
   final String userName;
@@ -62,6 +63,12 @@ class _UserHomePageState extends State<HomeUser> {
               userId: widget.userId,
             ),
           ),
+
+          // Tambahkan iklan di bawah search bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+            child: IklanPage(),
+          ),
           
           // Top Mentors
           MentorSection(
@@ -96,6 +103,50 @@ class _UserHomePageState extends State<HomeUser> {
         userName: widget.userName,
         userId: widget.userId, 
         asalKampus: widget.asalKampus,
+      ),
+    );
+  }
+}
+
+// Tambahkan widget helper untuk menampilkan iklan tanpa AppBar
+class IklanPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final List<String> imagePaths = [
+      'assets/iklan1.jpg',
+      'assets/iklan2.jpg',
+      'assets/iklan3.jpg',
+    ];
+    return SizedBox(
+      height: 180,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: imagePaths.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        itemBuilder: (context, index) {
+          return Container(
+            width: 280,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.07),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: Image.asset(
+                imagePaths[index],
+                fit: BoxFit.cover,
+                height: 160,
+                width: 280,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
