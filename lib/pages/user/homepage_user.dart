@@ -113,19 +113,18 @@ class IklanPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<String> imagePaths = [
-      'assets/iklan1.jpg',
-      'assets/iklan2.jpg',
-      'assets/iklan3.jpg',
+      'assets/iklan/iklan2.jpg',
+      'assets/iklan/iklan3.jpg',
     ];
     return SizedBox(
-      height: 180,
+      height: 220, // Tinggi diperbesar agar gambar proporsional
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: imagePaths.length,
         separatorBuilder: (_, __) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
           return Container(
-            width: 280,
+            width: MediaQuery.of(context).size.width * 0.92, // Lebar hampir penuh layar
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
@@ -140,9 +139,9 @@ class IklanPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               child: Image.asset(
                 imagePaths[index],
-                fit: BoxFit.cover,
-                height: 160,
-                width: 280,
+                fit: BoxFit.contain, // Gambar tampil penuh tanpa terpotong
+                height: double.infinity,
+                width: double.infinity,
               ),
             ),
           );

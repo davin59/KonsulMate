@@ -10,6 +10,7 @@ class SearchPage extends StatefulWidget {
   final String userId;
   final String asalKampus;
   final bool showFilters;
+  final int? forceCurrentIndex; // Tambahkan ini
 
 // Ubah constructor SearchPage
 
@@ -19,6 +20,7 @@ const SearchPage({
   required this.userId,
   this.asalKampus = "",
   this.showFilters = false,
+  this.forceCurrentIndex, // Tambahkan ini
 });
 
   @override
@@ -266,6 +268,7 @@ class _SearchPageState extends State<SearchPage> {
         userName: widget.userName,
         userId: widget.userId,
         asalKampus: widget.asalKampus,
+        forceCurrentIndex: widget.forceCurrentIndex, // Pastikan ini ada
       ),
     );
   }

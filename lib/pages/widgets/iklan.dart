@@ -5,11 +5,9 @@ class IklanPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ganti path asset sesuai lokasi file gambar Anda
     final List<String> imagePaths = [
-      'assets/iklan/iklan1.jpg', // Gambar 1
-      'assets/iklan/iklan2.jpg', // Gambar 2
-      'assets/iklan/iklan3.jpg', // Gambar 3
+      'assets/iklan/iklan2.jpg', 
+      'assets/iklan/iklan3.jpg', 
     ];
 
     return Scaffold(

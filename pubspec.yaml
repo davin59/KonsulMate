@@ -33,9 +33,7 @@ flutter:
     - assets/images/illustration.png
     - assets/icons/
     - assets/images/qris.png
-    - assets/iklan/iklan1.jpg
-    - assets/iklan/iklan2.jpg
-    - assets/iklan/iklan3.jpg
+    - assets/iklan/
 
   fonts:
     - family: chewy

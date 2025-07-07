@@ -10,6 +10,7 @@ class FooterUser extends StatelessWidget {
   final String userName;
   final String userId;
   final String asalKampus;
+  final int? forceCurrentIndex; // Tambahkan ini
 
   const FooterUser({
     super.key,
@@ -17,10 +18,11 @@ class FooterUser extends StatelessWidget {
     required this.userName,
     required this.userId,
     this.asalKampus = "",
+    this.forceCurrentIndex, // Tambahkan ini
   });
 
   void _onItemTapped(BuildContext context, int index) {
-    if (index == currentIndex) return; // This already exists and prevents redundant navigation
+    if ((forceCurrentIndex ?? currentIndex) == index) return; // Perbaiki di sini
 
     Widget page;
     switch (index) {
@@ -75,7 +77,7 @@ class FooterUser extends StatelessWidget {
     String label, {
     double iconSize = 24,
   }) {
-    final isSelected = index == currentIndex;
+    final isSelected = (forceCurrentIndex ?? currentIndex) == index; // Ubah ini
     return InkWell(
       onTap: () => _onItemTapped(context, index),
       child: Column(

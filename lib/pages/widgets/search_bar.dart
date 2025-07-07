@@ -52,6 +52,7 @@ class CustomSearchBar extends StatelessWidget {
                               builder: (context) => SearchPage(
                                 userName: userName,
                                 userId: userId,
+                                forceCurrentIndex: -1, // Tambahkan ini
                               ),
                             ),
                           );
@@ -87,6 +88,7 @@ class CustomSearchBar extends StatelessWidget {
                       userName: userName,
                       userId: userId,
                       showFilters: true,
+                      forceCurrentIndex: -1, // Tambahkan ini
                     ),
                   ),
                 );
